@@ -1,5 +1,5 @@
 # Phusim
-Phusim is a Phigros simulator based on unity (WIP), I want this as customizable as possible, 
+Phusim is a Phigros simulator based on unity (WIP), I want this as customizable as possible, <br>
 Work in progress:
 | Done: | Progress: | Items: | Comments:|
 | ----------- | ----------- | ----------- | ----------- |
@@ -14,8 +14,8 @@ Work in progress:
 
 
 # Things I used
-[ionicons by ionic-team](https://github.com/ionic-team/ionicons) Thanks to them for icons!
-[phira](https://github.com/TeamFlos/phira) Thanks for them for assets
+[ionicons by ionic-team](https://github.com/ionic-team/ionicons) Thanks to them for icons!<br>
+[phira](https://github.com/TeamFlos/phira) Thanks to them for assets!
 
 
 # License

@@ -13,6 +13,6 @@ public class BackgroundImage : MonoBehaviour
     public GameObject AssignedObject;
     void OnGUI()
     {
-        AssignedObject.transform.localScale = StaticUtils.LengthToScale(new List<float> { Screen.width, 0, Screen.height }, AssignedObject);
+        AssignedObject.GetComponent<Image>().sprite = UIUtils.Image2Sprite("");
     }
 }

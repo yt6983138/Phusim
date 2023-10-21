@@ -6,174 +6,55 @@ using System;
 using System.IO;
 #nullable enable
 
-public class Config : MonoBehaviour
+// b4 u ask why not playerperfs:
+// its bc its so fucking hard to change manually by non root users in android
+// also i cant use dict in dict with playerperfs
+
+public class Config
 {
     public static string? ConfigLocation;
-    private static ConfigItems? Configuration { get; set; }
+    private static ConfigItems? Configuration = null;
     // Start is called before the first frame update
-    void Start()
-    {
+    public static void Init()
+    {        
         try
         {
-            ConfigLocation = StaticUtils.GetDefaultConfigPath() + "config.json";
             LoadConfig();
-        } catch (Exception e)
+        } catch (Exception ex)
         {
             InitializeConfig();
-            LogHandler.Log(LogHandler.Error, e);
+            throw ex;
         }
     }
 
     // Update is called once per frame
     void Update()
     {
-        
     }
     public static void InitializeConfig()
     {
         SetDefaultConfig();
-        Directory.CreateDirectory(ConfigLocation);
+        Directory.CreateDirectory(Resource.ConfigPath);
         Directory.CreateDirectory(Configuration.LogPath);
         Directory.CreateDirectory(Configuration.SkinPath);
         Directory.CreateDirectory(Configuration.LanguagePath);
+        if (!File.Exists(ConfigLocation))
+        {
+            File.Create(ConfigLocation);
+        }
         SaveConfig();
     }
     public static void LoadConfig()
     {
-        Configuration = JsonSerializer.Deserialize<ConfigItems>(File.ReadAllText(ConfigLocation));
-        Skins.SkinFileLocation = Configuration.SkinPath + @"skins.json";
+        //Configuration = JsonSerializer.DeserializeBin<ConfigItems>(File.ReadAllText(ConfigLocation));
+        Configuration = Serializer.DeserializeBin<ConfigItems>(ConfigLocation);
+        Skins.SkinFileLocation = Configuration.SkinPath + Resource.SkinFileName;
      }
 
     public static void SetDefaultConfig()
     {
-        ConfigItems DefaultConfig = new ConfigItems();
-        string basePath = StaticUtils.GetDefaultConfigPath();
-        /*DefaultConfig.Judgements = new() { { "perfectEarly", new Dictionary<string, object> { 80, 40, 1, 1, 0.9, 1 } }, 
-                                           { "perfectLate", new Dictionary<string, object> { 80, 40, 1, 1, 0.9, 1 } },
-                                           { "goodEarly",  new Dictionary<string, object> { 160, 75, 0.65, 0.65, 0.585, 0.65 } }, 
-                                           { "goodLate", new Dictionary<string, object> { 160, 75, 0.65, 0.65, 0.585, 0.65 } },
-                                           { "badEarly",  new Dictionary<string, object> { 180, 140, 0, 0, 0, 0 } }, 
-                                           { "badLate", new Dictionary<string, object> { 180, 140, 0, 0, 0, 0 } },
-                                           { "miss", new Dictionary<string, object> { -1, -1, 0, 0, 0, 0} }, 
-                                           { "combo", new Dictionary<string, object> { -1, -1, 0, 0, 0.1, 0} }
-                                            };*/
-        // old format ^^^^
-        DefaultConfig.Judgements = new() { 
-            { "perfectEarly", new Dictionary<string, object> { 
-                { "JudgementNormalMs", 80 },
-                { "JudgementChallengeMs", 40},
-                { "accGivenNormal", 1},
-                { "accGivenChallenge", 1 },
-                { "ScoreGivenNormal", 0.9},
-                { "ScoreGivenChallenge", 1}
-            } },
-            { "perfectLate", new Dictionary<string, object> {
-                { "JudgementNormalMs", 80 },
-                { "JudgementChallengeMs", 40},
-                { "accGivenNormal", 1},
-                { "accGivenChallenge", 1 },
-                { "ScoreGivenNormal", 0.9},
-                { "ScoreGivenChallenge", 1}
-            } },
-            { "goodEarly",  new Dictionary<string, object> {
-                { "JudgementNormalMs", 160 },
-                { "JudgementChallengeMs", 75},
-                { "accGivenNormal", 0.65},
-                { "accGivenChallenge", 0.65 },
-                { "ScoreGivenNormal", 0.585},
-                { "ScoreGivenChallenge", 0.65}
-            } },
-            { "goodLate", new Dictionary<string, object> {
-                { "JudgementNormalMs", 160 },
-                { "JudgementChallengeMs", 75},
-                { "accGivenNormal", 0.65},
-                { "accGivenChallenge", 0.65 },
-                { "ScoreGivenNormal", 0.585},
-                { "ScoreGivenChallenge", 0.65}
-            } },
-            { "badEarly",  new Dictionary<string, object> {
-                { "JudgementNormalMs", 180 },
-                { "JudgementChallengeMs", 140},
-                { "accGivenNormal", 0},
-                { "accGivenChallenge", 0 },
-                { "ScoreGivenNormal", 0},
-                { "ScoreGivenChallenge", 0}
-            } },
-            { "badLate", new Dictionary<string, object> {
-                { "JudgementNormalMs", 180 },
-                { "JudgementChallengeMs", 140},
-                { "accGivenNormal", 0},
-                { "accGivenChallenge", 0 },
-                { "ScoreGivenNormal", 0},
-                { "ScoreGivenChallenge", 0}
-            } },
-            { "miss", new Dictionary<string, object> {
-                { "JudgementNormalMs", -1 },
-                { "JudgementChallengeMs", -1},
-                { "accGivenNormal", 0},
-                { "accGivenChallenge", 0 },
-                { "ScoreGivenNormal", 0},
-                { "ScoreGivenChallenge", 0}
-            } },
-            { "combo", new Dictionary<string, object> {
-                { "JudgementNormalMs", -1 },
-                { "JudgementChallengeMs", -1},
-                { "accGivenNormal", 0},
-                { "accGivenChallenge", 0 },
-                { "ScoreGivenNormal", 0},
-                { "ScoreGivenChallenge", 0}
-            } }
-        };
-        // btw fuck c# tuples
-        DefaultConfig.Ranks = new() {
-            { "phi", new Dictionary<string, object> { 
-                { "ScoreRequired", 1000000 },
-                { "AccRequired", 1 },
-                { "ComboRequired", -1 },
-                { "ComparingPriority", 0 }}},
-            { "fc", new Dictionary<string, object> {
-                { "ScoreRequired", 0 },
-                { "AccRequired", 0 },
-                { "ComboRequired", -1 },
-                { "ComparingPriority", 1 }}},
-            { "vu", new Dictionary<string, object> {
-                { "ScoreRequired", 960000 },
-                { "AccRequired", 0 },
-                { "ComboRequired", 0 },
-                { "ComparingPriority", 2 }}},
-            { "s", new Dictionary<string, object> {
-                { "ScoreRequired", 920000 },
-                { "AccRequired", 0 },
-                { "ComboRequired", 0 },
-                { "ComparingPriority", 3 }}},
-            { "a", new Dictionary<string, object> {
-                { "ScoreRequired", 880000 },
-                { "AccRequired", 0 },
-                { "ComboRequired", 0 },
-                { "ComparingPriority", 4 }}},
-            { "b", new Dictionary<string, object> {
-                { "ScoreRequired", 820000 },
-                { "AccRequired", 0 },
-                { "ComboRequired", 0 },
-                { "ComparingPriority", 5 }}},
-            { "c", new Dictionary<string, object> {
-                { "ScoreRequired", 700000 },
-                { "AccRequired", 0 },
-                { "ComboRequired", 0 },
-                { "ComparingPriority", 6 }}},
-            { "false", new Dictionary<string, object> {
-                { "ScoreRequired", 0 },
-                { "AccRequired", 0 },
-                { "ComboRequired", 0 },
-                { "ComparingPriority", 7 }}}
-        };
-        DefaultConfig.noteScale = 1;
-        DefaultConfig.Volumes = new() { { "Music", 1 }, { "Effects", 1 }, { "HitSound", 1 } };
-        DefaultConfig.SkinPath = StaticUtils.ToPlatformPath(basePath + "Skins/");
-        DefaultConfig.LanguagePath = StaticUtils.ToPlatformPath(basePath + "Langs/");
-        DefaultConfig.LogPath = StaticUtils.ToPlatformPath(basePath + "Logs/");
-        DefaultConfig.VerbooseLevel = 1;
-        Configuration = DefaultConfig;
+        Configuration = Resource.DefaultConfig;
+        ConfigLocation = Resource.ConfigPath + Resource.ConfigFileName;
     }
 
     public static ConfigItems ReadConfig()
@@ -187,8 +68,7 @@ public class Config : MonoBehaviour
     }
     public static void SaveConfig()
     {
-        string SerializedConfig = JsonSerializer.Serialize(Configuration);
-        File.WriteAllText(ConfigLocation, SerializedConfig);
+        Serializer.SerializeBin(ConfigLocation, Configuration);
     }
 }
 #nullable disable
