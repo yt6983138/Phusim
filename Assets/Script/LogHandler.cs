@@ -51,7 +51,7 @@ public class LogHandler
                 case 0:
                     switch (type)
                     {
-                        case var value when value == Info:
+                        case var value when value == Info: // idk why this works
                             return;
                         case var value when value == Verbose:
                             return;
@@ -76,7 +76,8 @@ public class LogHandler
         {
             Config.InitializeConfig();
         }
-        buffer = Encoding.Unicode.GetBytes(string.Format("[{0}] [{1}] {2}\nInner Exception: {3}\n", DateTime.Now, type, error.Message, error.InnerException.Message));
+        string inner = (error.InnerException == null) ? "none" : error.InnerException.Message; // first time using conditional operator lmao
+        buffer = Encoding.Unicode.GetBytes(string.Format("[{0}] [{1}] {2}\nInner Exception: {3}\n", DateTime.Now, type, error.Message, inner));
         Debug.Log(System.Text.Encoding.Unicode.GetString(buffer));
     }
 }

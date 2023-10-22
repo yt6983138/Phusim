@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -12,7 +13,12 @@ using UnityEngine.UI;
 public class UniversalButtonBehaviour : MonoBehaviour
 {
     public GameObject AssignedObject;
-    void Start()
+    private GameObject childObject;
+    private TextMeshProUGUI childComponent;
+    private SkinItems skin;
+    private LanguageItems lang;
+    private ConfigItems config;
+    void Awake()
     {
         AssignedObject.GetComponent<Button>().onClick.AddListener(delegate {
             Debug.Log("On click"); // FUCK C# TUPLES BRUHHHHHHHHHHHH
@@ -32,8 +38,24 @@ public class UniversalButtonBehaviour : MonoBehaviour
     }
     void OnGUI()
     {
-        AssignedObject.transform.position = UIUtils.ToGlobalPos((Vector3)(Skins.ReadSkin().ButtonProperties[AssignedObject.name])["Pos"]);
-        AssignedObject.transform.GetChild(0).gameObject.transform.GetComponent<TextMeshProUGUI>().text = Language.ReadLang().Language[AssignedObject.name];
-        AssignedObject.transform.GetChild(0).gameObject.transform.GetComponent<TextMeshProUGUI>().color = (Color)(Skins.ReadSkin().ButtonProperties[AssignedObject.name])["Color"];
+    }
+    void OnEnable()
+    {
+        childObject = AssignedObject.transform.GetChild(0).gameObject;
+        skin = Skins.ReadSkin();
+        lang = Language.ReadLang();
+        config = Config.ReadConfig();
+        childComponent = childObject.transform.GetComponent<TextMeshProUGUI>();
+
+        AssignedObject.transform.position = UIUtils.ToGlobalPos(
+            (Vector3)(skin.ButtonProperties[AssignedObject.name])["Pos"],
+            (RectOffset)(skin.ButtonProperties[AssignedObject.name])["Padding"]
+        );
+        AssignedObject.transform.localScale = (Vector3)(skin.ButtonProperties[AssignedObject.name])["Scale"];
+        AssignedObject.transform.GetComponent<RectTransform>().sizeDelta = ((PhysicalSize)skin.ButtonProperties[AssignedObject.name]["Size"]).to2dPixel();
+
+        childComponent.text = lang.Language[AssignedObject.name];
+        childComponent.color = (Color)(skin.ButtonProperties[AssignedObject.name])["Color"];
+        childComponent.font = Skins.LoadFont((string)(skin.ButtonProperties[AssignedObject.name])["Font"]);
     }
 }

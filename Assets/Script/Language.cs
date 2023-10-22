@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using UnityEngine;
 using System.Text.Json;
+using System;
 
 public class Language
 {
@@ -8,7 +9,16 @@ public class Language
     private static LanguageItems Lang; // idk y i cant use nullable
     public static void Init()
     {
-
+        try
+        {
+            LangFilePath = Resource.LangPath + Resource.LangFileName;
+            LoadLang();
+        } catch (Exception e)
+        {
+            SetDefaultLang();
+            SaveLang();
+            throw e;
+        }
     }
     public static void SetDefaultLang()
     {

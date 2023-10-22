@@ -24,6 +24,14 @@ public class Init : MonoBehaviour
             LogHandler.Init();
             LogHandler.Log(LogHandler.Error, e);
         }
+        AssignedInitObject.GetComponent<TextMeshProUGUI>().SetText(string.Format(Resource.LoadingScreenTexts["Loading"], Resource.LoadingScreenTexts["Lang"], ""));
+        try
+        {
+            Language.Init();
+        } catch (Exception e)
+        {
+            LogHandler.Log(LogHandler.Error, e);
+        }
         AssignedInitObject.GetComponent<TextMeshProUGUI>().SetText(string.Format(Resource.LoadingScreenTexts["Loading"], Resource.LoadingScreenTexts["Skin"], ""));
         try
         {

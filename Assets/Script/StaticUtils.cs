@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 using System.Linq;
+using System.IO;
 
 public class StaticUtils
 {
@@ -70,5 +71,12 @@ public class StaticUtils
             i++;
         }
         return typeArray;
+    }
+    public static void WriteBase64Resource(string path, string resource, FileMode fileMode = FileMode.OpenOrCreate)
+    {
+        using (FileStream file = File.Open(path, fileMode))
+        {
+            file.Write(Convert.FromBase64String(resource));
+        }
     }
 }

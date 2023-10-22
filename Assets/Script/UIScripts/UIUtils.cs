@@ -5,13 +5,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
-//using SixLabors;
 
 public class UIUtils
 {
-    public static Vector3 ToGlobalPos(Vector3 pos)
+    public static Vector3 ToGlobalPos(Vector3 pos, RectOffset padding = null)
     {
-        return new Vector3 { x = Screen.width / 2 * (pos.x + 1), y = Screen.height / 2 * (pos.y + 1), z = pos.z };
+        if (padding == null) { padding = new() { top = 0, bottom = 0, left = 0, right = 0 }; }
+        return new Vector3 { 
+            x = (Screen.width - padding.horizontal) / 2 * (pos.x + 1) + padding.left,
+            y = (Screen.height - padding.vertical) / 2 * (pos.y + 1) + padding.bottom,
+            z = pos.z };
     }
     public static Color HexToColor(string hex)
     {
@@ -20,22 +23,18 @@ public class UIUtils
         .Select(i => splited.Substring(i * 2, 2));
         return new Color(Convert.ToInt16(chunked.ElementAt(0), 16) / 256, Convert.ToInt16(chunked.ElementAt(1), 16) / 256, Convert.ToInt16(chunked.ElementAt(2), 16) / 256, Convert.ToInt16(chunked.ElementAt(3), 16) / 256);
     }
-    public static Sprite Image2Sprite(string path, float PixelPerUnit = 100f)
+    public static Texture2D LoadTexture(string path)
     {
-        /*using (var image = SixLabors.ImageSharp.Image.Load(path))
-        {
-            Texture2D texture = new(image.width, image.height);
-            if (!texture.LoadImage(File.ReadAllBytes(path)))
-            {
-                throw new Exception("Cannot load File " + path);
-            }
-            return Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0, 0), PixelPerUnit);
-        }*/
         Texture2D texture = new(2, 2);
         if (!texture.LoadImage(File.ReadAllBytes(path)))
         {
             throw new Exception("Cannot load File " + path);
         }
+        return texture;
+    }
+    public static Sprite Image2Sprite(string path, float PixelPerUnit = 100f)
+    {
+        Texture2D texture = LoadTexture(path);
         return Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0, 0), PixelPerUnit);
     }
     public static Color HSL2RGB(float h, float sl, float l) // https://geekymonkey.com/Programming/CSharp/RGB2HSL_HSL2RGB.htm

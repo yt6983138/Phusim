@@ -12,7 +12,7 @@ using UnityEngine;
 public class SkinItems
 {
     //[ProtoMember(1, DynamicType = true)]
-    public Dictionary<string, Dictionary<string, object>> Textures { get; set; }
+    public Dictionary<string, Dictionary<string, string>> Textures { get; set; }
     //[ProtoMember(10, DynamicType = true)]
     public Dictionary<string, Dictionary<string, object>> SoundEffect { get; set; }
     //[ProtoMember(15, DynamicType = true)]

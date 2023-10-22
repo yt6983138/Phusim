@@ -3,19 +3,21 @@ Phusim is a Phigros simulator based on unity (WIP), I want this as customizable 
 Work in progress:
 | Done: | Progress: | Items: | Comments:|
 | ----------- | ----------- | ----------- | ----------- |
-| [ ] | 90% | Config System  |  |
-| [ ] | 20% | Skin System |  |
-| [ ] | 10% | UI |  |
-| [ ] | 0% | Chart Loading |  |
-| [ ] | 0% | Plugin System | *May not do it |
-| [ ] | 0% | Player Input |  |
-| [ ] | -% | And More... |  |
+| False | 80% | Config System  |  |
+| False | 35% | Skin System |  |
+| False | 15% | UI |  |
+| False | 20% | Language System |  |
+| False | 0% | Chart Loading |  |
+| False | 0% | Plugin System | *May not do it |
+| False | 0% | Player Input |  |
+| False | -% | And More... |  |
 
-
+# [Discord Server](https://discord.gg/k63XF9cmtD)
+Or DM me, username: `._.69420._.`
 
 # Things I used
 [ionicons by ionic-team](https://github.com/ionic-team/ionicons) Thanks to them for icons!<br>
-[phira](https://github.com/TeamFlos/phira) Thanks to them for assets!
+[SharpSerializer](sharpserializer.net/en/index.html) For binary Serialization! <br>
 
 
 # License

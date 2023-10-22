@@ -19,6 +19,7 @@ public class Config
     {        
         try
         {
+            ConfigLocation = Resource.ConfigPath + Resource.ConfigFileName;
             LoadConfig();
         } catch (Exception ex)
         {

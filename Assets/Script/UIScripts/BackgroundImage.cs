@@ -11,8 +11,11 @@ public class BackgroundImage : MonoBehaviour
     //public Sprite Background;
     //public Image Background;
     public GameObject AssignedObject;
+    void OnEnable()
+    {
+        AssignedObject.GetComponent<Image>().sprite = Skins.LoadTextureAsSprite(AssignedObject.name);
+    }
     void OnGUI()
     {
-        AssignedObject.GetComponent<Image>().sprite = UIUtils.Image2Sprite("");
     }
 }
