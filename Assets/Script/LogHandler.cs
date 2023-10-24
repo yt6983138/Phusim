@@ -1,8 +1,8 @@
-using UnityEngine;
 using System;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
+using UnityEngine;
 
 public class LogHandler
 {
@@ -23,11 +23,13 @@ public class LogHandler
     public static async Task WriteBuffer()
     {
         string path;
-        try 
-        { 
+        try
+        {
             path = Config.ReadConfig().LogPath;
             Directory.CreateDirectory(path);
-        } catch {
+        }
+        catch
+        {
             path = Resource.LogPath;
             Directory.CreateDirectory(path);
         }

@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 
 public class UIUtils
@@ -11,10 +9,12 @@ public class UIUtils
     public static Vector3 ToGlobalPos(Vector3 pos, RectOffset padding = null)
     {
         if (padding == null) { padding = new() { top = 0, bottom = 0, left = 0, right = 0 }; }
-        return new Vector3 { 
+        return new Vector3
+        {
             x = (Screen.width - padding.horizontal) / 2 * (pos.x + 1) + padding.left,
             y = (Screen.height - padding.vertical) / 2 * (pos.y + 1) + padding.bottom,
-            z = pos.z };
+            z = pos.z
+        };
     }
     public static Color HexToColor(string hex)
     {
@@ -35,7 +35,12 @@ public class UIUtils
     public static Sprite Image2Sprite(string path, float PixelPerUnit = 100f)
     {
         Texture2D texture = LoadTexture(path);
-        return Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0, 0), PixelPerUnit);
+        return Texture2Sprite(texture, null, PixelPerUnit);
+    }
+    public static Sprite Texture2Sprite(Texture2D texture, Vector2? pivot = null, float PixelPerUnit = 100f)
+    {
+        Vector2 _pivot = (pivot == null) ? new Vector2(0, 0) : (Vector2)pivot;
+        return Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), _pivot, PixelPerUnit);
     }
     public static Color HSL2RGB(float h, float sl, float l) // https://geekymonkey.com/Programming/CSharp/RGB2HSL_HSL2RGB.htm
     {
@@ -98,7 +103,8 @@ public class UIUtils
                     break;
             }
         }
-        Color rgb = new() { 
+        Color rgb = new()
+        {
             r = r,
             g = g,
             b = b

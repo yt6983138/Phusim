@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using System.Threading;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -23,7 +18,8 @@ public class LoadingScreenBackgroundImage : MonoBehaviour
     }
     void OnGUI()
     {
-        for (float i = 0; i < 1; i += 1 / 256) {
+        for (float i = 0; i < 1; i += 1 / 256)
+        {
             //Color[] =  UIUtils.HSL2RGB(i, 0.5f, 0.5f);
             Thread.Sleep(delay);
             LoadingBackground.SetPixel(0, 0, UIUtils.HSL2RGB(i, 0.5f, 0.5f));

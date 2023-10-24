@@ -1,7 +1,4 @@
-﻿using System.Collections;
-using UnityEngine;
-using System.Text.Json;
-using System;
+﻿using System;
 
 public class Language
 {
@@ -13,7 +10,8 @@ public class Language
         {
             LangFilePath = Resource.LangPath + Resource.LangFileName;
             LoadLang();
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             SetDefaultLang();
             SaveLang();

@@ -1,9 +1,5 @@
 ﻿using Polenter.Serialization;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -19,7 +15,8 @@ public class Init : MonoBehaviour
         {
             Config.Init();
             LogHandler.Init();
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             LogHandler.Init();
             LogHandler.Log(LogHandler.Error, e);
@@ -28,7 +25,8 @@ public class Init : MonoBehaviour
         try
         {
             Language.Init();
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             LogHandler.Log(LogHandler.Error, e);
         }
@@ -36,7 +34,8 @@ public class Init : MonoBehaviour
         try
         {
             Skins.Init();
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             LogHandler.Log(LogHandler.Error, e);
         }

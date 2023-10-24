@@ -1,7 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using System.Text.Json;
 using System;
 using System.IO;
 #nullable enable
@@ -16,12 +12,13 @@ public class Config
     private static ConfigItems? Configuration = null;
     // Start is called before the first frame update
     public static void Init()
-    {        
+    {
         try
         {
             ConfigLocation = Resource.ConfigPath + Resource.ConfigFileName;
             LoadConfig();
-        } catch (Exception ex)
+        }
+        catch (Exception ex)
         {
             InitializeConfig();
             throw ex;
@@ -50,7 +47,7 @@ public class Config
         //Configuration = JsonSerializer.DeserializeBin<ConfigItems>(File.ReadAllText(ConfigLocation));
         Configuration = Serializer.DeserializeBin<ConfigItems>(ConfigLocation);
         Skins.SkinFileLocation = Configuration.SkinPath + Resource.SkinFileName;
-     }
+    }
 
     public static void SetDefaultConfig()
     {
