@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-public class Resource
+public static class Resource
 {
     private readonly static string basePath = StaticUtils.GetDefaultConfigPath();
     public readonly static string ConfigPath = basePath;
@@ -12,7 +12,27 @@ public class Resource
     public readonly static string LangFileName = "en.json";
     public readonly static string LogPath = basePath + StaticUtils.ToPlatformPath("Logs/");
     public readonly static string LogFileName = "latest.log";
-    public readonly static Dictionary<string, string> LoadingScreenTexts = new()
+
+    public readonly static float DefaultDPI = 150f;
+
+    public readonly static Dictionary<string, string> keyRefrence = new() // to prevent someday ill have to go thru entire program and change smth
+    {
+        { "Pos", "Pos"},
+        { "Scale", "Scale"},
+        { "Size", "Size"},
+        { "Padding", "Padding"},
+        { "Font", "Font"},
+        { "FontSize", "FontSize" },
+        { "Color", "Color"},
+        { "Execute", "Execute" },
+        { "BlurRadius", "BlurRadius" },
+        { "BlurIteration", "BlurIteration" },
+        { "DownSample", "DownSample" },
+        { "DownSampleMode", "DownSampleMode" },
+        { "RotationEuler", "RotationEuler" }
+    };
+
+    public readonly static Dictionary<string, string> LoadingScreenTexts = new() // never meant to be modified
     {
         { "Config", "Configuration System" },
         { "Skin", "Skin System" },
@@ -151,32 +171,41 @@ public class Resource
             { "Menu.PlayButton", new Dictionary<string, object> {
                 { "Pos", new Vector3 { x = 0.4F, y = 0.65F, z = 0F} },
                 { "Scale", new Vector3 { x = 1F, y = 1F, z = 1F} },
-                { "Size", new PhysicalSize() { xMM = 30, yMM = 12, zMM = 0 } },
+                { "Size", new PhysicalSize() { xMM = 40, yMM = 20, zMM = 0 } },
+                { "RotationEuler", new Vector3 { x = 0f, y = 15f, z = 0f} },
                 { "Padding", new RectOffset { top = 0, bottom = 0, left = 0, right = 0 } },
                 { "Font", @"Font.Default"},
+                { "FontSize", 20f },
                 { "Color", new Color(0F, 0F, 0F, 1F) },
                 { "Execute", @""}
             } },
             { "Menu.SettingsButton", new Dictionary<string, object> {
                 { "Pos", new Vector3 { x = 0.4F, y = 0F, z = 0F} },
                 { "Scale", new Vector3 { x = 1F, y = 1F, z = 1F} },
-                { "Size", new PhysicalSize() { xMM = 30, yMM = 12, zMM = 0 } },
+                { "Size", new PhysicalSize() { xMM = 40, yMM = 20, zMM = 0 } },
+                { "RotationEuler", new Vector3 { x = 0f, y = 20f, z = 0f} },
                 { "Padding", new RectOffset { top = 0, bottom = 0, left = 0, right = 0 } },
                 { "Font", @"Font.Default"},
+                { "FontSize", 20f },
                 { "Color", new Color(0F, 0F, 0F, 1F) },
                 { "Execute", new List<object> { "UnityEngine.SceneManagement.SceneManager, UnityEngine.CoreModule", "LoadScene", new object[] { "Settings" } } }
             } },
             { "Menu.SkinButton", new Dictionary<string, object> {
                 { "Pos", new Vector3 { x = 0.4F, y = -0.65F, z = 0F} },
                 { "Scale", new Vector3 { x = 1F, y = 1F, z = 1F} },
-                { "Size", new PhysicalSize () { xMM = 30, yMM = 12, zMM = 0 } },
+                { "Size", new PhysicalSize () { xMM = 40, yMM = 20, zMM = 0 } },
+                { "RotationEuler", new Vector3 { x = 0f, y = 15f, z = 0f} },
                 { "Padding", new RectOffset { top = 0, bottom = 0, left = 0, right = 0 } },
                 { "Font", @"Font.Default"},
+                { "FontSize", 20f },
                 { "Color", new Color(0F, 0F, 0F, 1F) },
                 { "Execute", @""}
             } },
-            { "MainUI.Canvas", new Dictionary<string, object> {
-                { "BlurRadius", 50 }
+            { "Menu.Background", new Dictionary<string, object> {
+                { "BlurRadius", 10 },
+                { "BlurIteration", 1 },
+                { "DownSample", 0.25f },
+                { "DownSampleMode", FilterMode.Bilinear }
             } }
         }
     };

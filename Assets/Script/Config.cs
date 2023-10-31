@@ -10,6 +10,7 @@ public class Config
 {
     public static string? ConfigLocation;
     private static ConfigItems? Configuration = null;
+    public static bool HasInitalized = false;
     // Start is called before the first frame update
     public static void Init()
     {
@@ -41,12 +42,14 @@ public class Config
             File.Create(ConfigLocation);
         }
         SaveConfig();
+        HasInitalized = true;
     }
     public static void LoadConfig()
     {
         //Configuration = JsonSerializer.DeserializeBin<ConfigItems>(File.ReadAllText(ConfigLocation));
         Configuration = Serializer.DeserializeBin<ConfigItems>(ConfigLocation);
         Skins.SkinFileLocation = Configuration.SkinPath + Resource.SkinFileName;
+        HasInitalized = true;
     }
 
     public static void SetDefaultConfig()

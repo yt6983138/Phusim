@@ -8,6 +8,7 @@ using UnityEngine.UI;
 public class UniversalButtonBehaviour : MonoBehaviour
 {
     public GameObject AssignedObject;
+    public Camera cam;
     private GameObject childObject;
     private TextMeshProUGUI childComponent;
     private SkinItems skin;
@@ -16,16 +17,12 @@ public class UniversalButtonBehaviour : MonoBehaviour
     void Awake()
     {
         AssignedObject.GetComponent<Button>().onClick.AddListener(delegate
-        {
-            Debug.Log("On click"); // FUCK C# TUPLES BRUHHHHHHHHHHHH
+        { // FUCK C# TUPLES BRUHHHHHHHHHHHH
             (string space, string method, object[] args) execute = StaticUtils.ExecuteToNamedTuple(
-                (List<object>)(Skins.ReadSkin().Properties[AssignedObject.name])["Execute"]
+                (List<object>)(Skins.ReadSkin().Properties[AssignedObject.name])[Resource.keyRefrence["Execute"]]
             );
-            Debug.Log(execute);
             Type type = Type.GetType(execute.space);
-            Debug.Log(type);
             MethodInfo method = type.GetMethod(execute.method, StaticUtils.ObjectToTypeArray(execute.args));
-            Debug.Log(method);
             if (method != null)
             {
                 method.Invoke(this, execute.args);
@@ -43,15 +40,30 @@ public class UniversalButtonBehaviour : MonoBehaviour
         config = Config.ReadConfig();
         childComponent = childObject.transform.GetComponent<TextMeshProUGUI>();
 
-        AssignedObject.transform.position = UIUtils.ToGlobalPos(
-            (Vector3)(skin.Properties[AssignedObject.name])["Pos"],
-            (RectOffset)(skin.Properties[AssignedObject.name])["Padding"]
+        //AssignedObject.transform.position = UIUtils.ToGlobalPos(
+        //    (Vector3)(skin.Properties[AssignedObject.name])[Resource.keyRefrence["Pos"]],
+        //    (RectOffset)(skin.Properties[AssignedObject.name])[Resource.keyRefrence["Padding"]]
+        //);
+        Vector3 pos = Vector3.zero;
+
+        RectTransformUtility.ScreenPointToWorldPointInRectangle(
+            AssignedObject.GetComponent<RectTransform>(),
+            UIUtils.ToGlobalPos(
+            (Vector3)(skin.Properties[AssignedObject.name])[Resource.keyRefrence["Pos"]],
+            (RectOffset)(skin.Properties[AssignedObject.name])[Resource.keyRefrence["Padding"]]),
+            cam,
+            out pos
         );
-        AssignedObject.transform.localScale = (Vector3)(skin.Properties[AssignedObject.name])["Scale"];
-        AssignedObject.transform.GetComponent<RectTransform>().sizeDelta = ((PhysicalSize)skin.Properties[AssignedObject.name]["Size"]).to2dPixel();
+        AssignedObject.GetComponent<RectTransform>().position = pos;
+        Debug.Log(AssignedObject.transform.position);
+        Debug.Log(AssignedObject.transform);
+        AssignedObject.transform.localScale = (Vector3)(skin.Properties[AssignedObject.name])[Resource.keyRefrence["Scale"]];
+        AssignedObject.transform.eulerAngles = (Vector3)(skin.Properties[AssignedObject.name])[Resource.keyRefrence["RotationEuler"]];
+        AssignedObject.transform.GetComponent<RectTransform>().sizeDelta = ((PhysicalSize)skin.Properties[AssignedObject.name][Resource.keyRefrence["Size"]]).toVector2();
 
         childComponent.text = lang.Language[AssignedObject.name];
-        childComponent.color = (Color)(skin.Properties[AssignedObject.name])["Color"];
-        childComponent.font = Skins.LoadFont((string)(skin.Properties[AssignedObject.name])["Font"]);
+        childComponent.color = (Color)(skin.Properties[AssignedObject.name])[Resource.keyRefrence["Color"]];
+        childComponent.font = Skins.LoadFont((string)(skin.Properties[AssignedObject.name])[Resource.keyRefrence["Font"]]);
+        childComponent.fontSize = (float)(skin.Properties[AssignedObject.name])[Resource.keyRefrence["FontSize"]];
     }
 }

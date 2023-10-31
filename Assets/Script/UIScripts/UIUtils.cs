@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using UnityEngine;
 
-public class UIUtils
+public static class UIUtils
 {
     public static Vector3 ToGlobalPos(Vector3 pos, RectOffset padding = null)
     {
@@ -111,5 +111,35 @@ public class UIUtils
         };
         return rgb;
 
+    }
+    public static Vector3 CalcTextureFitScreen(Texture2D texture)
+    {
+        float textureRatio = (float)texture.width / (float)texture.height;
+        float screenRatio = (float)Screen.width / (float)Screen.height; //forgot screen returns int smh
+        if (textureRatio < screenRatio)
+        {
+            return new Vector3( // no fucking way i have to add cast to each target bruh
+                    x: (float)Screen.width / (float)texture.width,
+                    y: (float)Screen.width / (float)texture.width,
+                    z: 1
+                );
+        } else if (textureRatio > screenRatio) 
+        {
+            return new Vector3(
+                    x: (float)Screen.height / (float)texture.height,
+                    y: (float)Screen.height / (float)texture.height,
+                    z: 1
+                );
+        } else if (textureRatio == screenRatio)
+        {
+            return new Vector3(
+                    x: (float)Screen.width / (float)texture.width,
+                    y: (float)Screen.height / (float)texture.height,
+                    z: 1
+                );
+        } else
+        {
+            throw new Exception("this should never happen");
+        }
     }
 }

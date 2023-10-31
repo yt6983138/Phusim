@@ -11,6 +11,8 @@ public class LogHandler
     public static string Info = @"Info";
     public static string Verbose = @"Verbose";
     public static string Other = @"Easter-Egg";
+
+    private static byte[] zero = new byte[0];
     private static byte[] buffer = { };
 
     public static void Init()
@@ -22,64 +24,54 @@ public class LogHandler
     }
     public static async Task WriteBuffer()
     {
-        string path;
-        try
-        {
-            path = Config.ReadConfig().LogPath;
-            Directory.CreateDirectory(path);
-        }
-        catch
-        {
-            path = Resource.LogPath;
-            Directory.CreateDirectory(path);
-        }
+        string path = Config.HasInitalized ? Config.ReadConfig().LogPath : Resource.LogPath;
+        Directory.CreateDirectory(path);
         using (FileStream SourceStream = File.Open(path + Resource.LogFileName, FileMode.Append))
         {
             while (true)
             {
                 SourceStream.Seek(0, SeekOrigin.End);
                 await SourceStream.WriteAsync(buffer, 0, buffer.Length);
-                buffer = new byte[0];
+                buffer = zero;
             }
         }
     }
     public static void Log(string type, Exception error)
     {
-        try
+        if (Config.HasInitalized) { Config.InitializeConfig(); }
+        switch (Config.ReadConfig().VerboseLevel)
         {
-            Config.LoadConfig();
-            switch (Config.ReadConfig().VerboseLevel)
-            {
-                case 0:
-                    switch (type)
-                    {
-                        case var value when value == Info: // idk why this works
-                            return;
-                        case var value when value == Verbose:
-                            return;
-                        default:
-                            break;
-                    }
-                    break;
-                case 1:
-                    switch (type)
-                    {
-                        case var value when value == Verbose:
-                            return;
-                        default:
-                            break;
-                    }
-                    break;
-                default:
-                    break;
-            }
+            case 0:
+                switch (type)
+                {
+                    case var value when value == Info: // idk why this works
+                        return;
+                    case var value when value == Verbose:
+                        return;
+                    default:
+                        break;
+                }
+                break;
+            case 1:
+                switch (type)
+                {
+                    case var value when value == Verbose:
+                        return;
+                    default:
+                        break;
+                }
+                break;
+            default:
+                break;
         }
-        catch
-        {
-            Config.InitializeConfig();
-        }
-        string inner = (error.InnerException == null) ? "none" : error.InnerException.Message; // first time using conditional operator lmao
-        buffer = Encoding.Unicode.GetBytes(string.Format("[{0}] [{1}] {2}\nInner Exception: {3}\n", DateTime.Now, type, error.Message, inner));
-        Debug.Log(System.Text.Encoding.Unicode.GetString(buffer));
+        string errorFormated = string.Format("[{0}] [{1}] {2} at {3};\nInner Exception: {4}\n",
+            DateTime.Now,
+            type,
+            error.Message,
+            error.StackTrace,
+            (error.InnerException == null) ? "none" : error.InnerException.Message // first time using conditional operator lmao
+        );
+        buffer = Encoding.Unicode.GetBytes(errorFormated);
+        Debug.Log(errorFormated);
     }
 }

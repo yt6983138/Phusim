@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using UnityEngine;
 
-public class StaticUtils
+public static class StaticUtils
 {
     // Start is called before the first frame update
     public static string GetDefaultConfigPath()

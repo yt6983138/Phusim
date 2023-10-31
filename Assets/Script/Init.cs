@@ -9,6 +9,7 @@ public class Init : MonoBehaviour
     public GameObject AssignedInitObject = null;
     void Start()
     {
+        AssignedInitObject.GetComponent<RectTransform>().sizeDelta = new Vector2(Screen.width, Screen.height);
         Serializer.binSettings = new SharpSerializerBinarySettings(BinarySerializationMode.SizeOptimized);
         AssignedInitObject.GetComponent<TextMeshProUGUI>().SetText(string.Format(Resource.LoadingScreenTexts["Loading"], Resource.LoadingScreenTexts["Config"], ""));
         try
