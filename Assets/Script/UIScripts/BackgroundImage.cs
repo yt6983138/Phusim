@@ -1,5 +1,5 @@
-﻿using System.Diagnostics;
-using System;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -12,14 +12,11 @@ public class BackgroundImage : MonoBehaviour
     {
         skin = Skins.ReadSkin();
 
-        Stopwatch watch = new();
+        System.Diagnostics.Stopwatch watch = new();
         watch.Start();
-        Texture2D blurred = LinearBlur.Blur(
+        Texture2D blurred = Effects.ApplyEffects(
             Skins.LoadTexture(AssignedObject.name),
-            (int)skin.Properties[AssignedObject.name]["BlurRadius"],
-            (int)skin.Properties[AssignedObject.name]["BlurIteration"],
-            (float)skin.Properties[AssignedObject.name]["DownSample"],
-            (FilterMode)skin.Properties[AssignedObject.name]["DownSampleMode"]
+            (List<Dictionary<string, object>>)skin.Properties[AssignedObject.name][Resource.keyRefrence["Effects"]]
         );
         watch.Stop();
         LogHandler.Log(

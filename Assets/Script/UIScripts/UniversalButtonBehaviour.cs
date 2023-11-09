@@ -4,6 +4,9 @@ using System.Reflection;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using CSScriptLib;
+using CSScripting;
+using UnityEngine.SceneManagement;
 
 public class UniversalButtonBehaviour : MonoBehaviour
 {
@@ -18,16 +21,25 @@ public class UniversalButtonBehaviour : MonoBehaviour
     {
         AssignedObject.GetComponent<Button>().onClick.AddListener(delegate
         { // FUCK C# TUPLES BRUHHHHHHHHHHHH
-            (string space, string method, object[] args) execute = StaticUtils.ExecuteToNamedTuple(
-                (List<object>)(Skins.ReadSkin().Properties[AssignedObject.name])[Resource.keyRefrence["Execute"]]
-            );
-            Type type = Type.GetType(execute.space);
+            var execute = Resource.InvokeInfo[AssignedObject.name];
+            Type type = Type.GetType(execute.info);
             MethodInfo method = type.GetMethod(execute.method, StaticUtils.ObjectToTypeArray(execute.args));
             if (method != null)
             {
                 method.Invoke(this, execute.args);
+            } else
+            {
+                LogHandler.Log(LogHandler.Warning, new Exception(string.Format("Failure to invoke method {0}, ass info {1}", execute.method, execute.info)));
             }
         });
+        
+        /*IScript script = (IScript)CSScript.CodeDomEvaluator.LoadCode(
+            (string)Skins.ReadSkin().Properties[AssignedObject.name][Resource.keyRefrence["Execute"]]
+        );
+        AssignedObject.GetComponent<Button>().onClick.AddListener(delegate
+        {
+            script.Execute(AssignedObject);
+        });*/
     }
     void OnGUI()
     {
@@ -55,11 +67,9 @@ public class UniversalButtonBehaviour : MonoBehaviour
             out pos
         );
         AssignedObject.GetComponent<RectTransform>().position = pos;
-        Debug.Log(AssignedObject.transform.position);
-        Debug.Log(AssignedObject.transform);
         AssignedObject.transform.localScale = (Vector3)(skin.Properties[AssignedObject.name])[Resource.keyRefrence["Scale"]];
         AssignedObject.transform.eulerAngles = (Vector3)(skin.Properties[AssignedObject.name])[Resource.keyRefrence["RotationEuler"]];
-        AssignedObject.transform.GetComponent<RectTransform>().sizeDelta = ((PhysicalSize)skin.Properties[AssignedObject.name][Resource.keyRefrence["Size"]]).toVector2();
+        AssignedObject.transform.GetComponent<RectTransform>().sizeDelta = ((PhysicalSize)skin.Properties[AssignedObject.name][Resource.keyRefrence["Size"]]).ToVector2();
 
         childComponent.text = lang.Language[AssignedObject.name];
         childComponent.color = (Color)(skin.Properties[AssignedObject.name])[Resource.keyRefrence["Color"]];

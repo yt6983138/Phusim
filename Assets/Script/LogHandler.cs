@@ -1,6 +1,8 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
 
@@ -11,18 +13,20 @@ public class LogHandler
     public static string Info = @"Info";
     public static string Verbose = @"Verbose";
     public static string Other = @"Easter-Egg";
-
+    /*
     private static byte[] zero = new byte[0];
-    private static byte[] buffer = { };
+    private static byte[] buf = { };
+    */
+    private static List<byte[]> queue = new();
 
     public static void Init()
     {
         Task.Run(() =>
         {
-            WriteBuffer();
+            WriteQueue();
         });
     }
-    public static async Task WriteBuffer()
+    /*public static async Task WriteBuffer()
     {
         string path = Config.HasInitalized ? Config.ReadConfig().LogPath : Resource.LogPath;
         Directory.CreateDirectory(path);
@@ -31,8 +35,26 @@ public class LogHandler
             while (true)
             {
                 SourceStream.Seek(0, SeekOrigin.End);
-                await SourceStream.WriteAsync(buffer, 0, buffer.Length);
-                buffer = zero;
+                await SourceStream.WriteAsync(buf, 0, buf.Length);
+                buf = zero;
+            }
+        }
+    }*/
+    public static async Task WriteQueue()
+    {
+        string path = Config.HasInitalized ? Config.ReadConfig().LogPath : Resource.LogPath;
+        Directory.CreateDirectory(path);
+        using (FileStream SourceStream = File.Open(path + Resource.LogFileName, FileMode.Append))
+        {
+            while (true)
+            {
+                if (queue.Count > 0)
+                {
+                    byte[] _buffer = queue[queue.Count - 1];
+                    await SourceStream.WriteAsync(_buffer, 0, _buffer.Length);
+                    queue.RemoveAt(queue.Count - 1);
+                }
+                Thread.Sleep(50);
             }
         }
     }
@@ -71,7 +93,8 @@ public class LogHandler
             error.StackTrace,
             (error.InnerException == null) ? "none" : error.InnerException.Message // first time using conditional operator lmao
         );
-        buffer = Encoding.Unicode.GetBytes(errorFormated);
+        // buf = Encoding.Unicode.GetBytes(errorFormated);
+        queue.Add(Encoding.Unicode.GetBytes(errorFormated));
         Debug.Log(errorFormated);
     }
 }

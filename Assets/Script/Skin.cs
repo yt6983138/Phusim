@@ -48,8 +48,9 @@ public class Skins
     }
     public static Texture2D LoadTexture(string key, string state = "Default")
     {
-        string path = Config.ReadConfig().SkinPath + StaticUtils.ToPlatformPath(string.Format("{0}/{1}.png", key, state));
         string nameSpace = string.Format("{0}.{1}", key, state);
+        key = key.Replace(".", "/");
+        string path = Config.ReadConfig().SkinPath + StaticUtils.ToPlatformPath(string.Format("{0}/{1}.png", key, state));
         try
         {
             if (TextureHolder.ContainsKey(nameSpace)) { return TextureHolder[nameSpace]; }

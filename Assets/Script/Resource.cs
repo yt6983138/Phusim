@@ -24,12 +24,13 @@ public static class Resource
         { "Font", "Font"},
         { "FontSize", "FontSize" },
         { "Color", "Color"},
-        { "Execute", "Execute" },
-        { "BlurRadius", "BlurRadius" },
-        { "BlurIteration", "BlurIteration" },
-        { "DownSample", "DownSample" },
-        { "DownSampleMode", "DownSampleMode" },
+        { "Effects", "Effects" },
         { "RotationEuler", "RotationEuler" }
+    };
+
+    public readonly static Dictionary<string, (string info, string method, object[] args)> InvokeInfo = new()
+    {
+        { "MainUI.PlayButton", ("UnityEngine.SceneManagement.SceneManager, UnityEngine.CoreModule", "LoadScene", new object[] { "PlayChart" }) }
     };
 
     public readonly static Dictionary<string, string> LoadingScreenTexts = new() // never meant to be modified
@@ -176,19 +177,17 @@ public static class Resource
                 { "Padding", new RectOffset { top = 0, bottom = 0, left = 0, right = 0 } },
                 { "Font", @"Font.Default"},
                 { "FontSize", 20f },
-                { "Color", new Color(0F, 0F, 0F, 1F) },
-                { "Execute", @""}
+                { "Color", new Color(0F, 0F, 0F, 1F) }
             } },
             { "Menu.SettingsButton", new Dictionary<string, object> {
                 { "Pos", new Vector3 { x = 0.4F, y = 0F, z = 0F} },
                 { "Scale", new Vector3 { x = 1F, y = 1F, z = 1F} },
                 { "Size", new PhysicalSize() { xMM = 40, yMM = 20, zMM = 0 } },
-                { "RotationEuler", new Vector3 { x = 0f, y = 20f, z = 0f} },
+                { "RotationEuler", new Vector3 { x = 0f, y = 15f, z = 0f} },
                 { "Padding", new RectOffset { top = 0, bottom = 0, left = 0, right = 0 } },
                 { "Font", @"Font.Default"},
                 { "FontSize", 20f },
-                { "Color", new Color(0F, 0F, 0F, 1F) },
-                { "Execute", new List<object> { "UnityEngine.SceneManagement.SceneManager, UnityEngine.CoreModule", "LoadScene", new object[] { "Settings" } } }
+                { "Color", new Color(0F, 0F, 0F, 1F) }
             } },
             { "Menu.SkinButton", new Dictionary<string, object> {
                 { "Pos", new Vector3 { x = 0.4F, y = -0.65F, z = 0F} },
@@ -198,14 +197,18 @@ public static class Resource
                 { "Padding", new RectOffset { top = 0, bottom = 0, left = 0, right = 0 } },
                 { "Font", @"Font.Default"},
                 { "FontSize", 20f },
-                { "Color", new Color(0F, 0F, 0F, 1F) },
-                { "Execute", @""}
+                { "Color", new Color(0F, 0F, 0F, 1F) }
             } },
-            { "Menu.Background", new Dictionary<string, object> {
-                { "BlurRadius", 10 },
-                { "BlurIteration", 1 },
-                { "DownSample", 0.25f },
-                { "DownSampleMode", FilterMode.Bilinear }
+            { "MainUI.Background", new Dictionary<string, object> {
+                { "Effects", new List<Dictionary<string,object>> {
+                    new Dictionary<string, object> {
+                        { "Name", "Blur" },
+                        { "BlurRadius", 10 },
+                        { "BlurIteration", 1 },
+                        { "DownSample", 0.25f },
+                        { "DownSampleMode", FilterMode.Bilinear }
+                    }
+                } }
             } }
         }
     };

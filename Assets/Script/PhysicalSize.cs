@@ -1,14 +1,15 @@
 ﻿using System;
 using UnityEngine;
 
+#pragma warning disable IDE1006 // Naming Styles
 public class PhysicalSize
 {
-    private static float mmToInch = 25.4F;
-    private static float dpi = (Screen.dpi == 0) ? Resource.DefaultDPI : Screen.dpi;
+    private const float mmToInch = 25.4F;
+    private readonly static float dpi = (Screen.dpi == 0) ? Resource.DefaultDPI : Screen.dpi;
     public float xMM { get; set; }
     public float yMM { get; set; }
     public float zMM { get; set; }
-    public Vector2 toVector2()
+    public Vector2 ToVector2()
     {
         return new Vector2()
         {
@@ -16,9 +17,9 @@ public class PhysicalSize
             y = this.yMM * dpi / mmToInch
         };
     }
-    public Vector3 toVector3()
+    public Vector3 ToVector3()
     {
-        Vector2 vector2 = toVector2();
+        Vector2 vector2 = ToVector2();
         return new Vector3()
         {
             x = vector2.x,
@@ -26,7 +27,7 @@ public class PhysicalSize
             z = this.zMM
         };
     }
-    public float toDistance(bool use2D = false)
+    public float ToDistance(bool use2D = false)
     {
         if (use2D)
         {
@@ -35,3 +36,4 @@ public class PhysicalSize
         return xMM * dpi / mmToInch;
     }
 }
+#pragma warning restore IDE1006 // Naming Styles
