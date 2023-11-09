@@ -7,7 +7,7 @@ Work in progress:
 | False | 45% | Skin System |  |
 | False | 20% | UI | (menu 90% done, gonna do settings next) |
 | False | 20% | Language System |  |
-| False | 0% | Chart Loading |  |
+| False | 20% | Chart Loading | havent add rpe support yet(working on offical chart format) |
 | False | 0% | Plugin System | *May not do it |
 | False | 0% | Player Input |  |
 | False | -% | And More... |  |
