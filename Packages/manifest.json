@@ -1,5 +1,15 @@
 {
+  "scopedRegistries": [
+    {
+      "name": "Packages from jillejr",
+      "url": "https://npm.cloudsmith.io/jillejr/newtonsoft-json-for-unity/",
+      "scopes": ["jillejr"]
+    }
+  ],
   "dependencies": {
+    "jillejr.newtonsoft.json-for-unity": "12.0.101",
+    "jillejr.newtonsoft.json-for-unity.converters": "1.0.0",
+    "com.elringus.unityconsole": "https://github.com/Elringus/UnityConsole.git#package",
     "com.unify.unified-universal-blur": "https://github.com/lukakldiashvili/Unified-Universal-Blur.git#0.2.3",
     "com.unity.collab-proxy": "2.0.7",
     "com.unity.feature.2d": "2.0.0",

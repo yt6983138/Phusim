@@ -4,13 +4,13 @@ using System.Reflection;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using CSScriptLib;
-using CSScripting;
+// using CSScriptLib;
+// using CSScripting;
 using UnityEngine.SceneManagement;
 
 public class UniversalButtonBehaviour : MonoBehaviour
 {
-    public GameObject AssignedObject;
+    //public GameObject AssignedObject;
     public Camera cam;
     private GameObject childObject;
     private TextMeshProUGUI childComponent;
@@ -19,9 +19,9 @@ public class UniversalButtonBehaviour : MonoBehaviour
     private ConfigItems config;
     void Awake()
     {
-        AssignedObject.GetComponent<Button>().onClick.AddListener(delegate
+        this.gameObject.GetComponent<Button>().onClick.AddListener(delegate
         { // FUCK C# TUPLES BRUHHHHHHHHHHHH
-            var execute = Resource.InvokeInfo[AssignedObject.name];
+            var execute = Resource.InvokeInfo[this.gameObject.name];
             Type type = Type.GetType(execute.info);
             MethodInfo method = type.GetMethod(execute.method, StaticUtils.ObjectToTypeArray(execute.args));
             if (method != null)
@@ -29,7 +29,7 @@ public class UniversalButtonBehaviour : MonoBehaviour
                 method.Invoke(this, execute.args);
             } else
             {
-                LogHandler.Log(LogHandler.Warning, new Exception(string.Format("Failure to invoke method {0}, ass info {1}", execute.method, execute.info)));
+                LogHandler.Log(LogHandler.Warning, string.Format("Failure to invoke method {0}, ass info {1}", execute.method, execute.info));
             }
         });
         
@@ -41,15 +41,12 @@ public class UniversalButtonBehaviour : MonoBehaviour
             script.Execute(AssignedObject);
         });*/
     }
-    void OnGUI()
-    {
-    }
     void OnEnable()
     {
-        childObject = AssignedObject.transform.GetChild(0).gameObject;
-        skin = Skins.ReadSkin();
+        childObject = this.gameObject.transform.GetChild(0).gameObject;
+        skin = Skins.GameSkin;
         lang = Language.ReadLang();
-        config = Config.ReadConfig();
+        config = Config.Configuration;
         childComponent = childObject.transform.GetComponent<TextMeshProUGUI>();
 
         //AssignedObject.transform.position = UIUtils.ToGlobalPos(
@@ -59,21 +56,21 @@ public class UniversalButtonBehaviour : MonoBehaviour
         Vector3 pos = Vector3.zero;
 
         RectTransformUtility.ScreenPointToWorldPointInRectangle(
-            AssignedObject.GetComponent<RectTransform>(),
+            this.gameObject.GetComponent<RectTransform>(),
             UIUtils.ToGlobalPos(
-            (Vector3)(skin.Properties[AssignedObject.name])[Resource.keyRefrence["Pos"]],
-            (RectOffset)(skin.Properties[AssignedObject.name])[Resource.keyRefrence["Padding"]]),
+            ((CustomSize)(skin.Properties[this.gameObject.name])["Pos"]).ToVector3(),
+            (RectOffset)(skin.Properties[this.gameObject.name])["Padding"]),
             cam,
             out pos
         );
-        AssignedObject.GetComponent<RectTransform>().position = pos;
-        AssignedObject.transform.localScale = (Vector3)(skin.Properties[AssignedObject.name])[Resource.keyRefrence["Scale"]];
-        AssignedObject.transform.eulerAngles = (Vector3)(skin.Properties[AssignedObject.name])[Resource.keyRefrence["RotationEuler"]];
-        AssignedObject.transform.GetComponent<RectTransform>().sizeDelta = ((PhysicalSize)skin.Properties[AssignedObject.name][Resource.keyRefrence["Size"]]).ToVector2();
+        this.gameObject.GetComponent<RectTransform>().position = pos;
+        this.gameObject.transform.localScale = ((CustomSize)(skin.Properties[this.gameObject.name])["Scale"]).ToVector3();
+        this.gameObject.transform.eulerAngles = ((CustomSize)(skin.Properties[this.gameObject.name])["RotationEuler"]).ToVector3();
+        this.gameObject.transform.GetComponent<RectTransform>().sizeDelta = ((CustomSize)skin.Properties[this.gameObject.name]["Size"]).ToVector2();
 
-        childComponent.text = lang.Language[AssignedObject.name];
-        childComponent.color = (Color)(skin.Properties[AssignedObject.name])[Resource.keyRefrence["Color"]];
-        childComponent.font = Skins.LoadFont((string)(skin.Properties[AssignedObject.name])[Resource.keyRefrence["Font"]]);
-        childComponent.fontSize = (float)(skin.Properties[AssignedObject.name])[Resource.keyRefrence["FontSize"]];
+        childComponent.text = lang.Language[this.gameObject.name];
+        childComponent.color = (Color)(skin.Properties[this.gameObject.name])["Color"];
+        childComponent.font = Skins.LoadFont((string)(skin.Properties[this.gameObject.name])["Font"]);
+        childComponent.fontSize = (float)(skin.Properties[this.gameObject.name])["FontSize"];
     }
 }

@@ -1,5 +1,12 @@
 {
   "dependencies": {
+    "com.elringus.unityconsole": {
+      "version": "https://github.com/Elringus/UnityConsole.git#package",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "44c1034cca81ad35bda76f9954cdc7fcde1d58d5"
+    },
     "com.unify.unified-universal-blur": {
       "version": "https://github.com/lukakldiashvili/Unified-Universal-Blur.git#0.2.3",
       "depth": 0,
@@ -264,6 +271,20 @@
         "com.unity.modules.jsonserialize": "1.0.0"
       },
       "url": "https://packages.unity.com"
+    },
+    "jillejr.newtonsoft.json-for-unity": {
+      "version": "12.0.101",
+      "depth": 0,
+      "source": "registry",
+      "dependencies": {},
+      "url": "https://npm.cloudsmith.io/jillejr/newtonsoft-json-for-unity"
+    },
+    "jillejr.newtonsoft.json-for-unity.converters": {
+      "version": "1.0.0",
+      "depth": 0,
+      "source": "registry",
+      "dependencies": {},
+      "url": "https://npm.cloudsmith.io/jillejr/newtonsoft-json-for-unity"
     },
     "com.unity.modules.ai": {
       "version": "1.0.0",

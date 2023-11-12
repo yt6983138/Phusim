@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UnityEngine;
 
 
 #pragma warning disable IDE1006 // Naming Styles
@@ -14,18 +15,20 @@ public class NoteOfficalChart : IOfficalNotes
     public float speed { get; set; }
     public float positionX { get; set; }
     public float floorPosition { get; set; }
-    public Note ToInternalFormat()
+    public Note ToInternalFormat(bool isAbove)
     {
-        Note _note = new Note()
+        Note _note = new()
         {
-            RequireTap = (type == 1) ? true : (type == 3),
+            RequireTap = (type == 1) || (type == 3),
             RequireFlick = (type == 4),
+            IsAbove = isAbove,
+            UseOverrideTexture = false,
             Time = this.time,
             State = NoteState.Pending,
             HoldTime = this.holdTime,
             Speed = this.speed,
             PositionX = this.positionX,
-            FloorPosition = this.floorPosition
+            PositionY = this.floorPosition
         };
         return _note;
     }
@@ -60,10 +63,8 @@ public class LineMoveEventsOfficalChart : IOfficalChartEvents
         {
             StartTime = this.startTime,
             EndTime = this.endTime,
-            StartX = this.start,
-            StartY = this.start2,
-            EndX = this.end,
-            EndY = this.end2,
+            MovementStart = new Vector3() { x = this.start, y = this.end, z = 0 },
+            MovementEnd = new Vector3() { x = this.start2, y = this.end2, z = 0 },
             EventType = JudgeLineEventType.MoveEvent
         };
     }
@@ -80,8 +81,8 @@ public class LineRotateEventsOfficalChart : IOfficalChartEvents
         {
             StartTime = this.startTime,
             EndTime = this.endTime,
-            StartRotate = this.start,
-            EndRotate = this.end,
+            RotationStart = new Vector3() { x = 0, y = 0, z = this.start },
+            RotationEnd = new Vector3() { x = 0, y = 0, z = this.end },
             EventType = JudgeLineEventType.RotateEvent
         };
     }
@@ -115,8 +116,7 @@ public class judgeLineListOfficalChart : IOfficalJudgeLines
     public List<LineDisappearEventsOfficalChart> judgeLineDisappearEvents { get; set; } // to prevent u being confused on this one - disappear = opacity
     public JudgeLine ToInternalFormat()
     {
-        List<Note> _notesAbove = new();
-        List<Note> _notesBelow = new();
+        List<Note> _notes = new();
         List<Event> _events = new();
         List<IOfficalChartEvents> _officalChartEvents = new();
         _officalChartEvents.AddRange(this.speedEvents);
@@ -125,11 +125,11 @@ public class judgeLineListOfficalChart : IOfficalJudgeLines
         _officalChartEvents.AddRange(this.judgeLineDisappearEvents);
         foreach (NoteOfficalChart note in notesAbove)
         {
-            _notesAbove.Add(note.ToInternalFormat());
+            _notes.Add(note.ToInternalFormat(isAbove: true));
         }
         foreach (NoteOfficalChart note in notesBelow)
         {
-            _notesBelow.Add(note.ToInternalFormat());
+            _notes.Add(note.ToInternalFormat(isAbove: false));
         }
         foreach (IOfficalChartEvents chartEvent in _officalChartEvents)
         {
@@ -139,8 +139,7 @@ public class judgeLineListOfficalChart : IOfficalJudgeLines
         return new JudgeLine()
         {
             BPM = this.bpm,
-            NotesAbove = _notesAbove,
-            NotesBelow = _notesBelow,
+            Notes = _notes,
             Events = _events
         };
     }

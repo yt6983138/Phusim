@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UnityEngine;
 
 
 public class Event : IComparable<Event>
@@ -16,29 +17,25 @@ public class Event : IComparable<Event>
     /// </summary>
     public float EndTime { get; set; }
     /// <summary>
-    /// 0 ~ 1, left to right
+    /// x: 0 ~ 1, left to right
+    /// y: 0 ~ 1, bottem to top
+    /// z: 0 ~ 1, plane 0 ~ 1000
     /// </summary>
-    public float StartX { get; set; } 
+    public Vector3 MovementStart { get; set; }
     /// <summary>
-    /// 0 ~ 1, down to up
+    /// x: 0 ~ 1, left to right
+    /// y: 0 ~ 1, bottem to top
+    /// z: 0 ~ 1, plane 0 ~ 1000
     /// </summary>
-    public float StartY { get; set; }
-    /// <summary>
-    /// 0 ~ 1, left to right
-    /// </summary>
-    public float EndX { get; set; }
-    /// <summary>
-    /// 0 ~ 1, down to up
-    /// </summary>
-    public float EndY { get; set; }
+    public Vector3 MovementEnd { get; set; }
     /// <summary>
     /// just like normal euler degrees
     /// </summary>
-    public float StartRotate { get; set; }
+    public Vector3 RotationStart { get; set; }
     /// <summary>
     /// just like normal euler degrees
     /// </summary>
-    public float EndRotate { get; set; }
+    public Vector3 RotationEnd { get; set; }
     /// <summary>
     /// idk how does this work
     /// </summary>

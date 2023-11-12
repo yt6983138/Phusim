@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using OdinSerializer;
+using System;
+using System.Collections.Generic;
 
-
-public class LanguageItems
+//[Serializable]
+public class LanguageItems : SerializedScriptableObject
 {
     public Dictionary<string, string> Language { get; set; }
 }

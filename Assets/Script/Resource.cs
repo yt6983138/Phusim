@@ -5,15 +5,16 @@ public static class Resource
 {
     private readonly static string basePath = StaticUtils.GetDefaultConfigPath();
     public readonly static string ConfigPath = basePath;
-    public readonly static string ConfigFileName = "config.dat";
+    public readonly static string ConfigFileName = "Config.json";
     public readonly static string SkinPath = basePath + StaticUtils.ToPlatformPath("Skins/Default/");
-    public readonly static string SkinFileName = "skin.dat";
+    public readonly static string SkinFileName = "Skin.json";
     public readonly static string LangPath = basePath + StaticUtils.ToPlatformPath("Lang/");
-    public readonly static string LangFileName = "en.json";
+    public readonly static string LangFileName = "en_US.json";
     public readonly static string LogPath = basePath + StaticUtils.ToPlatformPath("Logs/");
-    public readonly static string LogFileName = "latest.log";
+    public readonly static string LogFileName = "Latest.log";
 
-    public readonly static float DefaultDPI = 150f;
+    public const float DefaultDPI = 150f;
+    public const float Ratio16_9 = 16f / 9f;
 
     public readonly static Dictionary<string, string> keyRefrence = new() // to prevent someday ill have to go thru entire program and change smth
     {
@@ -30,7 +31,7 @@ public static class Resource
 
     public readonly static Dictionary<string, (string info, string method, object[] args)> InvokeInfo = new()
     {
-        { "MainUI.PlayButton", ("UnityEngine.SceneManagement.SceneManager, UnityEngine.CoreModule", "LoadScene", new object[] { "PlayChart" }) }
+        { "Menu.PlayButton", ("UnityEngine.SceneManagement.SceneManager, UnityEngine.CoreModule", "LoadScene", new object[] { "PlayChart" }) }
     };
 
     public readonly static Dictionary<string, string> LoadingScreenTexts = new() // never meant to be modified
@@ -44,124 +45,73 @@ public static class Resource
     public readonly static ConfigItems DefaultConfig = new()
     {
         Judgements = new() {
-            { "perfectEarly", new Dictionary<string, object> {
+            { "PerfectEarly", new Dictionary<string, object> {
                 { "JudgementNormalMs", 80 },
-                { "JudgementChallengeMs", 40},
-                { "accGivenNormal", 1},
-                { "accGivenChallenge", 1 },
-                { "ScoreGivenNormal", 0.9},
-                { "ScoreGivenChallenge", 1}
+                { "JudgementChallengeMs", 40 },
+                { "accGivenNormal", 1 },
+                { "accGivenChallenge", 1 }
             } },
-            { "perfectLate", new Dictionary<string, object> {
-                { "JudgementNormalMs", 80 },
-                { "JudgementChallengeMs", 40},
-                { "accGivenNormal", 1},
-                { "accGivenChallenge", 1 },
-                { "ScoreGivenNormal", 0.9},
-                { "ScoreGivenChallenge", 1}
+            { "PerfectLate", new Dictionary<string, object> {
+                { "JudgementNormalMs", -80 },
+                { "JudgementChallengeMs", -40 },
+                { "accGivenNormal", 1 },
+                { "accGivenChallenge", 1 }
             } },
-            { "goodEarly",  new Dictionary<string, object> {
+            { "GoodEarly", new Dictionary<string, object> {
                 { "JudgementNormalMs", 160 },
-                { "JudgementChallengeMs", 75},
-                { "accGivenNormal", 0.65},
-                { "accGivenChallenge", 0.65 },
-                { "ScoreGivenNormal", 0.585},
-                { "ScoreGivenChallenge", 0.65}
+                { "JudgementChallengeMs", 75 },
+                { "accGivenNormal", 0.65 },
+                { "accGivenChallenge", 0.65 }
             } },
-            { "goodLate", new Dictionary<string, object> {
-                { "JudgementNormalMs", 160 },
-                { "JudgementChallengeMs", 75},
-                { "accGivenNormal", 0.65},
-                { "accGivenChallenge", 0.65 },
-                { "ScoreGivenNormal", 0.585},
-                { "ScoreGivenChallenge", 0.65}
+            { "GoodLate", new Dictionary<string, object> {
+                { "JudgementNormalMs", -160 },
+                { "JudgementChallengeMs", -75 },
+                { "accGivenNormal", 0.65 },
+                { "accGivenChallenge", 0.65 }
             } },
-            { "badEarly",  new Dictionary<string, object> {
+            { "BadEarly", new Dictionary<string, object> {
                 { "JudgementNormalMs", 180 },
-                { "JudgementChallengeMs", 140},
-                { "accGivenNormal", 0},
-                { "accGivenChallenge", 0 },
-                { "ScoreGivenNormal", 0},
-                { "ScoreGivenChallenge", 0}
+                { "JudgementChallengeMs", 140 },
+                { "accGivenNormal", 0 },
+                { "accGivenChallenge", 0 }
             } },
-            { "badLate", new Dictionary<string, object> {
-                { "JudgementNormalMs", 180 },
-                { "JudgementChallengeMs", 140},
-                { "accGivenNormal", 0},
-                { "accGivenChallenge", 0 },
-                { "ScoreGivenNormal", 0},
-                { "ScoreGivenChallenge", 0}
+            { "BadLate", new Dictionary<string, object> {
+                { "JudgementNormalMs", -180 },
+                { "JudgementChallengeMs", -140 },
+                { "accGivenNormal", 0 },
+                { "accGivenChallenge", 0 }
             } },
-            { "miss", new Dictionary<string, object> {
-                { "JudgementNormalMs", -1 },
-                { "JudgementChallengeMs", -1},
-                { "accGivenNormal", 0},
-                { "accGivenChallenge", 0 },
-                { "ScoreGivenNormal", 0},
-                { "ScoreGivenChallenge", 0}
-            } },
-            { "combo", new Dictionary<string, object> {
-                { "JudgementNormalMs", -1 },
-                { "JudgementChallengeMs", -1},
-                { "accGivenNormal", 0},
-                { "accGivenChallenge", 0 },
-                { "ScoreGivenNormal", 0},
-                { "ScoreGivenChallenge", 0}
+            { "Miss", new Dictionary<string, object> {
+                { "accGivenNormal", 0 },
+                { "accGivenChallenge", 0 }
             } }
         },
-        Ranks = new() {
-                { "phi", new Dictionary<string, object> {
-                    { "ScoreRequired", 1000000 },
+        Ranks = new() { {
+                "Phi", new Dictionary<string, object> {
                     { "AccRequired", 1 },
                     { "ComboRequired", -1 },
-                    { "ComparingPriority", 0 }}},
-                {
-        "fc", new Dictionary<string, object> {
-                    { "ScoreRequired", 0 },
-                    { "AccRequired", 0 },
-                    { "ComboRequired", -1 },
-                    { "ComparingPriority", 1 }}},
-                {
-        "vu", new Dictionary<string, object> {
-                    { "ScoreRequired", 960000 },
+                    { "ComparingPriority", 0 } } },
+            {
+                "Vu", new Dictionary<string, object> {
                     { "AccRequired", 0 },
                     { "ComboRequired", 0 },
-                    { "ComparingPriority", 2 }}},
-                {
-        "s", new Dictionary<string, object> {
-                    { "ScoreRequired", 920000 },
+                    { "ComparingPriority", 1 } } },
+            {
+                "Success", new Dictionary<string, object> {
                     { "AccRequired", 0 },
                     { "ComboRequired", 0 },
-                    { "ComparingPriority", 3 }}},
-                {
-        "a", new Dictionary<string, object> {
-                    { "ScoreRequired", 880000 },
+                    { "ComparingPriority", 2 } } },
+            {
+                "Failed", new Dictionary<string, object> {
                     { "AccRequired", 0 },
                     { "ComboRequired", 0 },
-                    { "ComparingPriority", 4 }}},
-                {
-        "b", new Dictionary<string, object> {
-                    { "ScoreRequired", 820000 },
-                    { "AccRequired", 0 },
-                    { "ComboRequired", 0 },
-                    { "ComparingPriority", 5 }}},
-                {
-        "c", new Dictionary<string, object> {
-                    { "ScoreRequired", 700000 },
-                    { "AccRequired", 0 },
-                    { "ComboRequired", 0 },
-                    { "ComparingPriority", 6 }}},
-                {
-        "false", new Dictionary<string, object> {
-                    { "ScoreRequired", 0 },
-                    { "AccRequired", 0 },
-                    { "ComboRequired", 0 },
-                    { "ComparingPriority", 7 }}}
-            },
-        noteScale = 1,
+                    { "ComparingPriority", 3 } } }
+        },
+        NoteScale = 1,
         Volumes = new() { { "Music", 1 }, { "Effects", 1 }, { "HitSound", 1 } },
+        ChartAspectRatio = (((float)Screen.width / (float)Screen.height) < Ratio16_9) ? ((float)Screen.width / (float)Screen.height) : Ratio16_9,
         SkinPath = SkinPath,
-        LanguagePath = LangPath,
+        LanguagePath = LangPath, 
         LogPath = LogPath,
         VerboseLevel = 1
     };
@@ -170,36 +120,59 @@ public static class Resource
         SoundEffect = new() { },
         Properties = new() {
             { "Menu.PlayButton", new Dictionary<string, object> {
-                { "Pos", new Vector3 { x = 0.4F, y = 0.65F, z = 0F} },
-                { "Scale", new Vector3 { x = 1F, y = 1F, z = 1F} },
-                { "Size", new PhysicalSize() { xMM = 40, yMM = 20, zMM = 0 } },
-                { "RotationEuler", new Vector3 { x = 0f, y = 15f, z = 0f} },
+                { "Pos", new CustomSize { PosX = 0.4F, PosY = 0.65F, PosZ = 0F} },
+                { "Scale", new CustomSize { PosX = 1F, PosY = 1F, PosZ = 1F} },
+                { "Size", new CustomSize() { xMM = 40, yMM = 20, zMM = 0 } },
+                { "RotationEuler", new CustomSize {PosX = 0f, PosY = 15f, PosZ = 0f} },
                 { "Padding", new RectOffset { top = 0, bottom = 0, left = 0, right = 0 } },
                 { "Font", @"Font.Default"},
                 { "FontSize", 20f },
                 { "Color", new Color(0F, 0F, 0F, 1F) }
             } },
             { "Menu.SettingsButton", new Dictionary<string, object> {
-                { "Pos", new Vector3 { x = 0.4F, y = 0F, z = 0F} },
-                { "Scale", new Vector3 { x = 1F, y = 1F, z = 1F} },
-                { "Size", new PhysicalSize() { xMM = 40, yMM = 20, zMM = 0 } },
-                { "RotationEuler", new Vector3 { x = 0f, y = 15f, z = 0f} },
+                { "Pos", new CustomSize {PosX = 0.4F, PosY = 0F, PosZ = 0F} },
+                { "Scale", new CustomSize { PosX = 1F, PosY = 1F, PosZ = 1F} },
+                { "Size", new CustomSize() { xMM = 40, yMM = 20, zMM = 0 } },
+                { "RotationEuler", new CustomSize { PosX = 0f, PosY = 15f, PosZ = 0f} },
                 { "Padding", new RectOffset { top = 0, bottom = 0, left = 0, right = 0 } },
                 { "Font", @"Font.Default"},
                 { "FontSize", 20f },
                 { "Color", new Color(0F, 0F, 0F, 1F) }
             } },
             { "Menu.SkinButton", new Dictionary<string, object> {
-                { "Pos", new Vector3 { x = 0.4F, y = -0.65F, z = 0F} },
-                { "Scale", new Vector3 { x = 1F, y = 1F, z = 1F} },
-                { "Size", new PhysicalSize () { xMM = 40, yMM = 20, zMM = 0 } },
-                { "RotationEuler", new Vector3 { x = 0f, y = 15f, z = 0f} },
+                { "Pos", new CustomSize { PosX = 0.4F, PosY = -0.65F, PosZ = 0F} },
+                { "Scale", new CustomSize {PosX = 1F, PosY = 1F, PosZ = 1F} },
+                { "Size", new CustomSize () { xMM = 40, yMM = 20, zMM = 0 } },
+                { "RotationEuler", new CustomSize {PosX = 0f, PosY = 15f, PosZ = 0f} },
                 { "Padding", new RectOffset { top = 0, bottom = 0, left = 0, right = 0 } },
                 { "Font", @"Font.Default"},
                 { "FontSize", 20f },
                 { "Color", new Color(0F, 0F, 0F, 1F) }
             } },
             { "MainUI.Background", new Dictionary<string, object> {
+                { "Effects", new List<Dictionary<string,object>> {
+                    new Dictionary<string, object> {
+                        { "Name", "Blur" },
+                        { "BlurRadius", 10 },
+                        { "BlurIteration", 1 },
+                        { "DownSample", 0.25f },
+                        { "DownSampleMode", FilterMode.Bilinear }
+                    }
+                } }
+            } },
+            { "PlayChart.Overlay.ProgressBar", new Dictionary<string, object> {
+                { "Height", new CustomSize() { yMM = 3} },
+                { "ProgressedFillColor", new Color(0.5f, 0.5f, 0.5f, 1) },
+                { "UnprogressedFillColor", new Color(0, 0, 0, 0) },
+                { "HandleColor", new Color(1, 1, 1, 1) }
+            } },
+            { "PlayChart.Overlay.LeftPanel", new Dictionary<string, object> {
+                { "Color", new Color(0.3f, 0.3f, 0.3f, 0.6f) }
+            } },
+            { "PlayChart.Overlay.RightPanel", new Dictionary<string, object> {
+                { "Color", new Color(0.3f, 0.3f, 0.3f, 0.6f) }
+            } },
+            { "PlayChart.Background", new Dictionary<string, object> {
                 { "Effects", new List<Dictionary<string,object>> {
                     new Dictionary<string, object> {
                         { "Name", "Blur" },

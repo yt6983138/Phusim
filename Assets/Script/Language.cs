@@ -1,6 +1,7 @@
 ﻿using System;
+using UnityEngine;
 
-public class Language
+public static class Language
 {
     public static string LangFilePath = @"";
     private static LanguageItems Lang; // idk y i cant use nullable

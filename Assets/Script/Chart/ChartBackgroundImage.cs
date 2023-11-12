@@ -4,11 +4,11 @@ using UnityEngine;
 using UnityEngine.UI;
 
 
-public class BackgroundImage : MonoBehaviour
+public class ChartBackgroundImage : MonoBehaviour
 {
     //public GameObject AssignedObject;
     private SkinItems skin;
-    void OnEnable()
+    void Start()
     {
         skin = Skins.GameSkin;
 

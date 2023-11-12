@@ -5,9 +5,9 @@ using TMPro;
 using UnityEngine;
 //using ProtoBuf;
 #nullable enable
-public class Skins
+public static class Skins
 {
-    public static SkinItems GameSkin;
+    public static SkinItems GameSkin { get; set; }
     public static string? SkinFileLocation;
     public static Dictionary<string, TMP_FontAsset> FontHolder = new();
     public static Dictionary<string, Texture2D> TextureHolder = new();
@@ -15,46 +15,44 @@ public class Skins
     {
         try
         {
-            SkinFileLocation = Config.ReadConfig().SkinPath + Resource.SkinFileName;
+            throw new Exception();
+            if (Config.Configuration.SkinPath == null) {  throw new NullReferenceException("Something is wrong about config file, consider re-generate it"); }
+            SkinFileLocation = Config.Configuration.SkinPath + Resource.SkinFileName;
             LoadSkin();
         }
         catch (Exception e)
         {
             LoadDefaultSkin();
-            GenerateSkin();
+            SaveSkin();
             throw e;
         }
         finally
         {
-            LoadFont("Font.Default", Config.ReadConfig().SkinPath + "default.ttf");
+            LoadFont("Font.Default", Config.Configuration.SkinPath + "default.ttf");
         }
     }
     public static void LoadSkin()
     {
-        GameSkin = Serializer.DeserializeBin<SkinItems>(SkinFileLocation);
-    }
-    public static SkinItems ReadSkin()
-    {
-        return GameSkin;
+        GameSkin = Serializer.DeserializeJson<SkinItems>(SkinFileLocation);
     }
     public static void LoadDefaultSkin()
     {
         GameSkin = Resource.DefaultSkin;
         SkinFileLocation = Resource.SkinPath + Resource.SkinFileName;
     }
-    public static void GenerateSkin() // u shud not use this at anytime (except u wanna impl, in game skin editor?)
+    public static void SaveSkin() // u shud not use this at anytime (except u wanna impl, in game skin editor?)
     {
-        Serializer.SerializeBin(SkinFileLocation, GameSkin);
+        Serializer.SerializeJson(SkinFileLocation, GameSkin);
     }
     public static Texture2D LoadTexture(string key, string state = "Default")
     {
         string nameSpace = string.Format("{0}.{1}", key, state);
         key = key.Replace(".", "/");
-        string path = Config.ReadConfig().SkinPath + StaticUtils.ToPlatformPath(string.Format("{0}/{1}.png", key, state));
+        string path = Config.Configuration.SkinPath + StaticUtils.ToPlatformPath(string.Format("{0}/{1}.png", key, state));
         try
         {
             if (TextureHolder.ContainsKey(nameSpace)) { return TextureHolder[nameSpace]; }
-            Directory.CreateDirectory(Config.ReadConfig().SkinPath + key);
+            Directory.CreateDirectory(Config.Configuration.SkinPath + key);
             TextureHolder[nameSpace] = UIUtils.LoadTexture(path);
             return TextureHolder[nameSpace];
         }

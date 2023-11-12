@@ -1,16 +1,18 @@
-﻿using Polenter.Serialization;
+﻿//using Polenter.Serialization;
 using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityConsole;
 
 public class Init : MonoBehaviour
 {
     public GameObject AssignedInitObject = null;
     void Start()
     {
+        UnityConsole.ConsoleGUI.Initialize();
         AssignedInitObject.GetComponent<RectTransform>().sizeDelta = new Vector2(Screen.width, Screen.height);
-        Serializer.binSettings = new SharpSerializerBinarySettings(BinarySerializationMode.SizeOptimized);
+        //Serializer.binSettings = new SharpSerializerBinarySettings(BinarySerializationMode.SizeOptimized);
         AssignedInitObject.GetComponent<TextMeshProUGUI>().SetText(string.Format(Resource.LoadingScreenTexts["Loading"], Resource.LoadingScreenTexts["Config"], ""));
         try
         {

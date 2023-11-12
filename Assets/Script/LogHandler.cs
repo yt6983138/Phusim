@@ -4,6 +4,7 @@ using System.IO;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using UnityEditor.PackageManager;
 using UnityEngine;
 
 public class LogHandler
@@ -28,7 +29,7 @@ public class LogHandler
     }
     /*public static async Task WriteBuffer()
     {
-        string path = Config.HasInitalized ? Config.ReadConfig().LogPath : Resource.LogPath;
+        string path = Config.HasInitalized ? Config.Configuration.LogPath : Resource.LogPath;
         Directory.CreateDirectory(path);
         using (FileStream SourceStream = File.Open(path + Resource.LogFileName, FileMode.Append))
         {
@@ -42,7 +43,7 @@ public class LogHandler
     }*/
     public static async Task WriteQueue()
     {
-        string path = Config.HasInitalized ? Config.ReadConfig().LogPath : Resource.LogPath;
+        string path = Config.HasInitalized ? Config.Configuration.LogPath : Resource.LogPath;
         Directory.CreateDirectory(path);
         using (FileStream SourceStream = File.Open(path + Resource.LogFileName, FileMode.Append))
         {
@@ -58,18 +59,18 @@ public class LogHandler
             }
         }
     }
-    public static void Log(string type, Exception error)
+    private static bool CheckIgnore(string type)
     {
         if (Config.HasInitalized) { Config.InitializeConfig(); }
-        switch (Config.ReadConfig().VerboseLevel)
+        switch (Config.Configuration.VerboseLevel)
         {
             case 0:
                 switch (type)
                 {
                     case var value when value == Info: // idk why this works
-                        return;
+                        return true;
                     case var value when value == Verbose:
-                        return;
+                        return true;
                     default:
                         break;
                 }
@@ -78,14 +79,19 @@ public class LogHandler
                 switch (type)
                 {
                     case var value when value == Verbose:
-                        return;
+                        return true;
                     default:
                         break;
                 }
                 break;
             default:
-                break;
+                return false;
         }
+        return false;
+    }
+    public static void Log(string type, Exception error)
+    {
+        CheckIgnore(type);
         string errorFormated = string.Format("[{0}] [{1}] {2} at {3};\nInner Exception: {4}\n",
             DateTime.Now,
             type,
@@ -93,7 +99,17 @@ public class LogHandler
             error.StackTrace,
             (error.InnerException == null) ? "none" : error.InnerException.Message // first time using conditional operator lmao
         );
-        // buf = Encoding.Unicode.GetBytes(errorFormated);
+        queue.Add(Encoding.Unicode.GetBytes(errorFormated));
+        Debug.Log(errorFormated);
+    }
+    public static void Log(string type, string message)
+    {
+        CheckIgnore(type);
+        string errorFormated = string.Format("[{0}] [{1}] {2}\n",
+            DateTime.Now,
+            type,
+            message
+        );
         queue.Add(Encoding.Unicode.GetBytes(errorFormated));
         Debug.Log(errorFormated);
     }

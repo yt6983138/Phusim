@@ -2,7 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
+using System.Text;
 using UnityEngine;
+using UnityEngine.Networking;
 
 public static class StaticUtils
 {
@@ -69,6 +72,22 @@ public static class StaticUtils
         using (FileStream file = File.Open(path, fileMode))
         {
             file.Write(resource);
+        }
+    }
+    public static AudioClip GetAudioClip(Uri url, AudioType audioType = AudioType.MPEG)
+    {
+        using (UnityWebRequest web = UnityWebRequestMultimedia.GetAudioClip(url, audioType))
+        {
+            web.SendWebRequest();
+            AudioClip _clip = DownloadHandlerAudioClip.GetContent(web);
+            return (_clip != null) ? _clip : throw new Exception("Unable to get clip");
+        }
+    }
+    public static byte[] Hash(byte[] input)
+    {
+        using (SHA1Managed sha1 = new SHA1Managed())
+        {
+            return sha1.ComputeHash(input);
         }
     }
 }

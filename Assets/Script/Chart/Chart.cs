@@ -8,6 +8,14 @@ public class Chart
     public float Offset { get; set; }
     public List<JudgeLine> JudgeLineList { get; set; }
     public ChartFeatures Features { get; set; }
+    public void Process()
+    {
+        for (int i = 0; i < JudgeLineList.Count; i++)
+        {
+            JudgeLineList[i].Process();
+            JudgeLineList[i].Id = i;
+        }
+    }
 }
 public class ChartFeatures
 {

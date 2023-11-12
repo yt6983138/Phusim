@@ -9,7 +9,7 @@ using System.IO;
 public class Config
 {
     public static string? ConfigLocation;
-    private static ConfigItems? Configuration = null;
+    public static ConfigItems? Configuration { get; set; } = null;
     public static bool HasInitalized = false;
     // Start is called before the first frame update
     public static void Init()
@@ -37,17 +37,17 @@ public class Config
         Directory.CreateDirectory(Configuration.LogPath);
         Directory.CreateDirectory(Configuration.SkinPath);
         Directory.CreateDirectory(Configuration.LanguagePath);
-        if (!File.Exists(ConfigLocation))
+        /*if (!File.Exists(ConfigLocation))
         {
             File.Create(ConfigLocation);
-        }
+        }*/
         SaveConfig();
         HasInitalized = true;
     }
     public static void LoadConfig()
     {
         //Configuration = JsonSerializer.DeserializeBin<ConfigItems>(File.ReadAllText(ConfigLocation));
-        Configuration = Serializer.DeserializeBin<ConfigItems>(ConfigLocation);
+        Configuration = Serializer.DeserializeJson<ConfigItems>(ConfigLocation);
         Skins.SkinFileLocation = Configuration.SkinPath + Resource.SkinFileName;
         HasInitalized = true;
     }
@@ -57,19 +57,9 @@ public class Config
         Configuration = Resource.DefaultConfig;
         ConfigLocation = Resource.ConfigPath + Resource.ConfigFileName;
     }
-
-    public static ConfigItems ReadConfig()
-    {
-        return Configuration;
-    }
-
-    public static void WriteConfig(ConfigItems config)
-    {
-        Configuration = config;
-    }
     public static void SaveConfig()
     {
-        Serializer.SerializeBin(ConfigLocation, Configuration);
+        Serializer.SerializeJson(ConfigLocation, Configuration);
     }
 }
 #nullable disable

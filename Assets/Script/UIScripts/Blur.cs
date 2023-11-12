@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System;
 
-public class LinearBlur
+public static class LinearBlur
 {
     private static float _rSum = 0;
     private static float _gSum = 0;
