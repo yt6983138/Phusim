@@ -9,11 +9,13 @@ public class test : MonoBehaviour
 {
     void Start()
     {
-        AudioClip clip = StaticUtils.GetAudioClip(new Uri(@"E:\Files\Phusim\test.mp3", UriKind.Absolute));
+        /*AudioClip clip = StaticUtils.GetAudioClip(new Uri(@"E:\Files\Phusim\test.mp3", UriKind.Absolute));
 
         AudioSource source = this.gameObject.GetComponent<AudioSource>();
 
         source.clip = clip;
-        source.Play();
+        source.Play();*/
+        List<ChartMeta> test = ChartManager.LoadMetaFromDifferentSimulator(@"E:\Files\Phusim\info.yml");
+        Debug.Log(test.ToString<ChartMeta>());
     }
 }

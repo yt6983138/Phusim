@@ -7,15 +7,6 @@
       "dependencies": {},
       "hash": "44c1034cca81ad35bda76f9954cdc7fcde1d58d5"
     },
-    "com.unify.unified-universal-blur": {
-      "version": "https://github.com/lukakldiashvili/Unified-Universal-Blur.git#0.2.3",
-      "depth": 0,
-      "source": "git",
-      "dependencies": {
-        "com.unity.render-pipelines.universal": "7.0.0"
-      },
-      "hash": "aaa40c6ccc0740ff5eb88bffbeaf4479f494c677"
-    },
     "com.unity.2d.animation": {
       "version": "9.0.3",
       "depth": 1,

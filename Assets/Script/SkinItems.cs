@@ -1,12 +1,11 @@
 ﻿//using ProtoBuf;
-using OdinSerializer;
 using System;
 using System.Collections.Generic;
 
 //[ProtoContract]
 //[Serializable]
 //[Serializable]
-public class SkinItems : SerializedScriptableObject
+public class SkinItems
 {
     //[ProtoMember(10, DynamicType = true)]
     public Dictionary<string, Dictionary<string, object>> SoundEffect { get; set; }

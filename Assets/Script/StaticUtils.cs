@@ -90,4 +90,26 @@ public static class StaticUtils
             return sha1.ComputeHash(input);
         }
     }
+    public static void ExecuteWithTry(Action method)
+    {
+        try
+        {
+            method();
+        } catch (Exception e)
+        {
+            LogHandler.Log(LogHandler.Warning, e);
+        }
+    }
+    public static T ExecuteWithTry<T>(Func<T> method)
+    {
+        try
+        {
+            return (T)method();
+        }
+        catch (Exception e)
+        {
+            LogHandler.Log(LogHandler.Warning, e);
+            return default(T);
+        }
+    }
 }

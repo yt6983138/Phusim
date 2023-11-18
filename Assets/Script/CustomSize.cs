@@ -1,5 +1,4 @@
-﻿using OdinSerializer;
-using System;
+﻿using System;
 using UnityEngine;
 
 #pragma warning disable IDE1006 // Naming Styles

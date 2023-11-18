@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
-using static UnityEditor.Progress;
 
 public static class ChartManager
 {
@@ -72,86 +71,86 @@ public static class ChartManager
         }
         return ChartType.Unknown;
     }
-    public static ChartMeta GetChartMeta(string ChartFolder)
+    public static List<ChartMeta> GetChartMeta(string ChartFolder)
     {
         List<string> files = new(Directory.GetFiles(ChartFolder));
         foreach (string file in files)
         {
             string filename = Path.GetFileName(file);
-            if (filename == "PhusimMeta.json") { return Serializer.DeserializeJson<ChartMeta>(file); }
-            if (filename.Contains(".csv", StringComparison.CurrentCultureIgnoreCase) || filename.Contains(".yml", StringComparison.CurrentCultureIgnoreCase))
+            if (filename == "PhusimMeta.json") { return Serializer.DeserializeJson<List<ChartMeta>>(file); }
+            try
             {
                 return LoadMetaFromDifferentSimulator(file);
-            }
+            } catch { }
         }
-        return new ChartMeta();
+        throw new Exception("No meta found");
 
     }
-    public static ChartMeta LoadMetaFromDifferentSimulator(string path)
+    public static List<ChartMeta> LoadMetaFromDifferentSimulator(string path)
     {
         string filename = Path.GetFileName(path);
-        ChartMeta meta = new()
-        {
-            BackgroundsForChart = new(),
-            ChartDiffcultys = new(),
-            Charts = new(),
-            MakerForChart = new(),
-            MusicsForChart = new(),
-            PlayRecords = new(),
-        };
+        List<ChartMeta> metas = new();
         // lchzh format start
-        if (filename.Contains(".csv", StringComparison.CurrentCultureIgnoreCase))
+        if (filename.EndsWith(".csv", StringComparison.CurrentCultureIgnoreCase))
         {
             List<dynamic> otherMeta = Serializer.DeserializeCsv<dynamic>(path);
             foreach (dynamic item in otherMeta)
             {
-                meta.Charts.Add(item.Chart);
-                meta.MusicsForChart.Add(item.Chart, item.Music);
-                meta.BackgroundsForChart.Add(item.Chart, item.Image);
-                meta.ChartName.Add(item.Chart, item.Name);
-                meta.MakerForChart.Add(item.Chart, (item.Artist, item.Illustrator, item.Charter));
-                meta.ChartDiffcultys.Add(item.Chart, ParseDiffcultyFromString(item.Level));
+                ChartMeta meta = new()
+                {
+                    ChartPath = item.Chart
+                };
+                StaticUtils.ExecuteWithTry(() => { meta.MusicPath = item.Music; });
+                StaticUtils.ExecuteWithTry(() => { meta.BackgroundPath = item.Image; });
+                StaticUtils.ExecuteWithTry(() => { meta.ChartName = item.Name; });
+                StaticUtils.ExecuteWithTry(() => { meta.Charter = item.Charter; });
+                StaticUtils.ExecuteWithTry(() => { meta.Illustrator = item.Illustrator; });
+                StaticUtils.ExecuteWithTry(() => { meta.Composer = item.Artist; });
+                StaticUtils.ExecuteWithTry(() => { meta.ChartDiffculty = ParseDiffcultyFromString(item.Level); });
+                metas.Add(meta);
             }
-            return meta;
-        } // phira start
-        else if (filename.Contains(".yml", StringComparison.CurrentCultureIgnoreCase))
+            return metas;
+        } // phira format start
+        else if (filename.EndsWith(".yml", StringComparison.CurrentCultureIgnoreCase))
         {
-            Dictionary<string, object> items = Serializer.DeserializeYamlSimple(path);
-            string chartFile = (string)items["chart"];
+            var otherMeta = Serializer.DeserializeYaml<Dictionary<object, object>>(path);
+            ChartMeta meta = new()
+            {
+                ChartPath = (string)otherMeta["chart"]
+            };
+            StaticUtils.ExecuteWithTry(() => { meta.MusicPath = (string)otherMeta["music"]; });
+            StaticUtils.ExecuteWithTry(() => { meta.BackgroundPath = (string)otherMeta["illustration"]; });
+            StaticUtils.ExecuteWithTry(() => { meta.ChartName = (string)otherMeta["name"]; });
+            StaticUtils.ExecuteWithTry(() => { meta.Charter = (string)otherMeta["charter"]; });
+            StaticUtils.ExecuteWithTry(() => { meta.Illustrator = (string)otherMeta["illustrator"]; });
+            StaticUtils.ExecuteWithTry(() => { meta.Composer = (string)otherMeta["composer"]; });
 
-            meta.Charts.Add(chartFile);
-            meta.MusicsForChart.Add(chartFile, (string)items["music"]);
-            meta.BackgroundsForChart.Add(chartFile, (string)items["illustration"]);
-            meta.ChartName.Add(chartFile, (string)items["name"]);
-            meta.MakerForChart.Add(chartFile, ((string)items["composer"], (string)items["illustrator"], (string)items["charter"]));
-            ChartDiffculty level = ParseDiffcultyFromString((string)items["level"]);
-            level.Level = (float)items["difficulty"];
-            meta.ChartDiffcultys.Add(chartFile, level);
+            ChartDiffculty diffculty = new();
+            StaticUtils.ExecuteWithTry(() => { diffculty = ParseDiffcultyFromString((string)otherMeta["level"]); });
+            diffculty.Level = StaticUtils.ExecuteWithTry<float>(() => { return float.Parse((string)otherMeta["difficulty"]); });
+            // for some reason ymlparser think floats are strings bruh
+            meta.ChartDiffculty = diffculty;
 
-            return meta;
+            metas.Add(meta);
+            return metas;
         }
-        return null;
+        throw new Exception("Not known/invaild meta format!");
     }
     public static ChartDiffculty ParseDiffcultyFromString(string diffculty)
     {
-        string[] splitted = diffculty.Split(' ');
-        string type = "Unknown";
-        string level = "-32768";
-        float realLevel = -32768;
+        string[] splitted = diffculty.Split((char[])null, StringSplitOptions.RemoveEmptyEntries);
+        // note: (char[])null means all types of whitespaces(i got tricked with en-space and normal space bruhhhhhhhh)
+        // example format "SP Lv.6969" or "FM  Lv. 1145141919810"
+        ChartDiffculty chartDiffculty = new();
         foreach (string line in splitted)
         {
             if (line.StartsWith("Lv.", StringComparison.InvariantCultureIgnoreCase))
             {
-                level = line.Replace("Lv.", "").Replace(" ", "");
-                try { realLevel = float.Parse(line); } catch { }
+                StaticUtils.ExecuteWithTry(() => { chartDiffculty.Level = float.Parse(line.Replace("Lv.", "").Replace(" ", "")); });
             }
-            else if (line.Length > 1 && line.Length < 8) { type = line; }
+            else if (line.Length > 1 && line.Length < 8) { chartDiffculty.Type = line; }
         }
 
-        return new ChartDiffculty()
-        {
-            Type = type,
-            Level = realLevel
-        };
+        return chartDiffculty;
     }
 }

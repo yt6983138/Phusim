@@ -1,5 +1,5 @@
 ﻿using System.IO;
-using OdinSerializer;
+using System;
 using Newtonsoft.Json;
 using System.Text;
 using UnityEngine;
@@ -8,15 +8,18 @@ using System.Globalization;
 using Unity.VisualScripting;
 using System.Collections;
 using System.Collections.Generic;
+using YamlDotNet.Serialization;
+using System.Linq;
 
 public static class Serializer
 {
     public static JsonSerializerSettings JsonSettings { get; set; }
     public static void SerializeBin<T>(string path, T obj)
     {
+        throw new NotImplementedException();
         using (FileStream file = File.Open(path, FileMode.OpenOrCreate))
         {
-            file.Write(SerializationUtility.SerializeValue<T>(obj, DataFormat.Binary));
+            //file.Write(SerializationUtility.SerializeValue<T>(obj, DataFormat.Binary));
         }
     }
     public static void SerializeJson<T>(string path, T obj)
@@ -35,7 +38,8 @@ public static class Serializer
     }
     public static T DeserializeBin<T>(string path)
     {
-        return SerializationUtility.DeserializeValue<T>(File.ReadAllBytes(path), DataFormat.Binary);
+        throw new NotImplementedException();
+        //return SerializationUtility.DeserializeValue<T>(File.ReadAllBytes(path), DataFormat.Binary);
     }
     public static T DeserializeJson<T>(string path)
     {
@@ -49,46 +53,12 @@ public static class Serializer
     {
         using (var csv = new CsvReader(new StreamReader(path), CultureInfo.InvariantCulture))
         {
-            return (List<T>)csv.GetRecords<T>();
+            return csv.GetRecords<T>().ToList();
         }
     }
-    public static Dictionary<string, object> DeserializeYamlSimple(string path)
+    public static T DeserializeYaml<T>(string path)
     {
-        Dictionary<string, object> keyValuePairs = new();
-
-        foreach (string line in File.ReadAllLines(path))
-        {
-            try
-            {
-                string[] pair = line.Split(':', 2);
-                string value = pair[1].Trim();
-                if (value == "null")
-                {
-                    keyValuePairs.Add(pair[0].Replace(" ", ""), null);
-                }
-                else if (value == "true")
-                {
-                    keyValuePairs.Add(pair[0].Replace(" ", ""), true);
-                }
-                else if (value == "false")
-                {
-                    keyValuePairs.Add(pair[0].Replace(" ", ""), false);
-                }
-                else
-                {
-                    try
-                    {
-                        keyValuePairs.Add(pair[0].Replace(" ", ""), float.Parse(value));
-                    }
-                    catch
-                    {
-                        keyValuePairs.Add(pair[0].Replace(" ", ""), value);
-
-                    }
-                }
-            }
-            catch { }
-        }
-        return keyValuePairs;
+        var deserializer = new DeserializerBuilder().Build();
+        return deserializer.Deserialize<T>(File.ReadAllText(path));
     }
 }

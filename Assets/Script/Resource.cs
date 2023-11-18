@@ -45,45 +45,30 @@ public static class Resource
     public readonly static ConfigItems DefaultConfig = new()
     {
         Judgements = new() {
-            { "PerfectEarly", new Dictionary<string, object> {
-                { "JudgementNormalMs", 80 },
-                { "JudgementChallengeMs", 40 },
-                { "accGivenNormal", 1 },
-                { "accGivenChallenge", 1 }
+            { "Perfect", new Judgement()
+            {
+                JudgementRange = (-80, 80),
+                AccGiven = 1f,
+                ComparingPriority = 0
             } },
-            { "PerfectLate", new Dictionary<string, object> {
-                { "JudgementNormalMs", -80 },
-                { "JudgementChallengeMs", -40 },
-                { "accGivenNormal", 1 },
-                { "accGivenChallenge", 1 }
+            { "Good", new Judgement()
+            {
+                JudgementRange = (-160, 160),
+                AccGiven = 0.65f,
+                ComparingPriority = 1
             } },
-            { "GoodEarly", new Dictionary<string, object> {
-                { "JudgementNormalMs", 160 },
-                { "JudgementChallengeMs", 75 },
-                { "accGivenNormal", 0.65 },
-                { "accGivenChallenge", 0.65 }
+            { "Bad", new Judgement()
+            {
+                JudgementRange = (-180, 180),
+                AccGiven = 0f,
+                ComparingPriority = 2
             } },
-            { "GoodLate", new Dictionary<string, object> {
-                { "JudgementNormalMs", -160 },
-                { "JudgementChallengeMs", -75 },
-                { "accGivenNormal", 0.65 },
-                { "accGivenChallenge", 0.65 }
+            { ".DragAndFlick", new Judgement() {
+                JudgementRange = (0, 180),
+                AccGiven = 1f,
             } },
-            { "BadEarly", new Dictionary<string, object> {
-                { "JudgementNormalMs", 180 },
-                { "JudgementChallengeMs", 140 },
-                { "accGivenNormal", 0 },
-                { "accGivenChallenge", 0 }
-            } },
-            { "BadLate", new Dictionary<string, object> {
-                { "JudgementNormalMs", -180 },
-                { "JudgementChallengeMs", -140 },
-                { "accGivenNormal", 0 },
-                { "accGivenChallenge", 0 }
-            } },
-            { "Miss", new Dictionary<string, object> {
-                { "accGivenNormal", 0 },
-                { "accGivenChallenge", 0 }
+            { ".HoldMaxUnholdTime", new Judgement() {
+                JudgementRange = (0, 40)
             } }
         },
         Ranks = new() { {
@@ -93,12 +78,12 @@ public static class Resource
                     { "ComparingPriority", 0 } } },
             {
                 "Vu", new Dictionary<string, object> {
-                    { "AccRequired", 0 },
+                    { "AccRequired", 0.975 },
                     { "ComboRequired", 0 },
                     { "ComparingPriority", 1 } } },
             {
                 "Success", new Dictionary<string, object> {
-                    { "AccRequired", 0 },
+                    { "AccRequired", 0.9 },
                     { "ComboRequired", 0 },
                     { "ComparingPriority", 2 } } },
             {

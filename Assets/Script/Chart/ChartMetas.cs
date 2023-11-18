@@ -22,18 +22,32 @@ public class ChartResources
 }
 public class ChartMeta
 {
-    public Dictionary<string, string> ChartName;
-    public Dictionary<string, ChartDiffculty> ChartDiffcultys;
-    public Dictionary<string, string> MusicsForChart;
-    public Dictionary<string, string> BackgroundsForChart;
-    public List<string> Charts;
-    public Dictionary<string, List<PlayRecord>> PlayRecords;
-    public Dictionary<string, (string Composer, string Illustrator, string Charter)> MakerForChart;
+    public string ChartName = "Unset/Unknown";
+    public ChartDiffculty ChartDiffculty = new();
+    public string MusicPath;
+    public string BackgroundPath;
+    public string ChartPath;
+    public List<PlayRecord> PlayRecords = new();
+    public string Composer = "Unset/Unknown";
+    public string Illustrator = "Unset/Unknown";
+    public string Charter = "Unset/Unknown";
+    public override string ToString()
+    {
+        return $"{{ Name = {ChartName}, \n" +
+            $"Diffculty = {{ {ChartDiffculty} }}, \n" +
+            $"MusicPath = {MusicPath}, \n" +
+            $"BackgroundPath = {BackgroundPath}, \n" +
+            $"ChartPath = {ChartPath}, \n" +
+            $"PlayRecords = {{ {string.Join(", ", PlayRecords)} }}, \n" +
+            $"Composer = {Composer}, \n" +
+            $"Illustrator = {Illustrator}, \n" +
+            $"Charter = {Charter} }}";
+    }
 }
 public class ChartDiffculty
 {
-    public string Type;
-    public float Level;
+    public string Type = "Unknown";
+    public float Level = -32768;
     public string Format = "{0} Lv.{1}";
     public string FullString
     {
@@ -42,12 +56,16 @@ public class ChartDiffculty
             return string.Format(Format, Type, Level);
         }
     }
+    public override string ToString()
+    {
+        return $"Format = {Format}, Type = {Type}, Level = {Level}";
+    }
 }
 public class PlayRecord
 {
-    public DateTime PlayTime;
-    public float Acc;
-    public float AbsoluteAcc;
-    public bool HasFullCombo;
-    public float AverageDelay;
+    public DateTime PlayTime = new(2069, 69, 69);
+    public float Acc = 0f;
+    public float AbsoluteAcc = 0f;
+    public bool FullComboed = false;
+    public float AverageDelay = 0f;
 }

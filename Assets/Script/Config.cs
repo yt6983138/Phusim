@@ -8,8 +8,8 @@ using System.IO;
 
 public class Config
 {
-    public static string? ConfigLocation;
-    public static ConfigItems? Configuration { get; set; } = null;
+    public static string ConfigLocation;
+    public static ConfigItems Configuration { get; set; }
     public static bool HasInitalized = false;
     // Start is called before the first frame update
     public static void Init()
@@ -27,9 +27,6 @@ public class Config
     }
 
     // Update is called once per frame
-    void Update()
-    {
-    }
     public static void InitializeConfig()
     {
         SetDefaultConfig();
