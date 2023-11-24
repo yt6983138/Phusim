@@ -14,7 +14,7 @@ interface IOfficalNotes
 }
 interface IOfficalJudgeLines
 {
-    public JudgeLine ToInternalFormat(); 
+    public JudgeLineInternalFormat ToInternalFormat(); 
 }
 interface IOfficalCharts
 {

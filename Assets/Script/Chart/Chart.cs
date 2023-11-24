@@ -6,7 +6,7 @@ public class Chart
 {
     public string Format { get; set; }
     public float Offset { get; set; }
-    public List<JudgeLine> JudgeLineList { get; set; }
+    public List<JudgeLineInternalFormat> JudgeLineList { get; set; }
     public ChartFeatures Features { get; set; }
     public void Process()
     {

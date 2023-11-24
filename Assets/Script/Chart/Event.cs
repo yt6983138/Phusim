@@ -58,4 +58,17 @@ public class Event : IComparable<Event>
     {
         return this.StartTime.CompareTo(chartEvent.StartTime);
     }
+    public override string ToString()
+    {
+        return $"StartTime: {this.StartTime}, \n" +
+            $"EndTime: {this.EndTime}, \n" +
+            $"MovementStart: {this.MovementStart}, \n" +
+            $"MovementEnd: {this.MovementEnd}, \n" +
+            $"RotationStart: {this.RotationStart}, \n" +
+            $"RotationEnd: {this.RotationEnd}, \n" +
+            $"Speed: {this.Speed}, \n" +
+            $"StartOpacity: {this.StartOpacity}, \n" +
+            $"EndOpacity: {this.EndOpacity}, \n" +
+            $"EventType: {this.EventType}\n";
+    }
 }

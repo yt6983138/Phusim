@@ -13,8 +13,11 @@ public static class Resource
     public readonly static string LogPath = basePath + StaticUtils.ToPlatformPath("Logs/");
     public readonly static string LogFileName = "Latest.log";
 
+    public readonly static float ScreenAspectRatio = (float)Screen.width / (float)Screen.height;
+
     public const float DefaultDPI = 150f;
     public const float Ratio16_9 = 16f / 9f;
+    public const float OfficalChartPosXMagicNumber = 8.95522403717041f;
 
     public readonly static Dictionary<string, string> keyRefrence = new() // to prevent someday ill have to go thru entire program and change smth
     {
@@ -94,7 +97,7 @@ public static class Resource
         },
         NoteScale = 1,
         Volumes = new() { { "Music", 1 }, { "Effects", 1 }, { "HitSound", 1 } },
-        ChartAspectRatio = (((float)Screen.width / (float)Screen.height) < Ratio16_9) ? ((float)Screen.width / (float)Screen.height) : Ratio16_9,
+        ChartAspectRatio = ((ScreenAspectRatio) < Ratio16_9) ? (ScreenAspectRatio) : Ratio16_9,
         SkinPath = SkinPath,
         LanguagePath = LangPath, 
         LogPath = LogPath,

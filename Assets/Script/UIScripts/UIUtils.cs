@@ -116,28 +116,35 @@ public static class UIUtils
     {
         float textureRatio = (float)texture.width / (float)texture.height;
         float screenRatio = (float)Screen.width / (float)Screen.height; //forgot screen returns int smh
-        if (textureRatio < screenRatio)
+        return _scaleFitScreen(textureRatio, screenRatio, texture.width, texture.height);
+    }
+    private static Vector3 _scaleFitScreen(float fromRatio, float toRatio, float fromWidth, float fromHeight)
+    {
+        if (fromRatio < toRatio)
         {
             return new Vector3( // no fucking way i have to add cast to each target bruh
-                    x: (float)Screen.width / (float)texture.width,
-                    y: (float)Screen.width / (float)texture.width,
+                    x: (float)Screen.width / (float)fromWidth,
+                    y: (float)Screen.width / (float)fromWidth,
                     z: 1
                 );
-        } else if (textureRatio > screenRatio) 
+        }
+        else if (fromRatio > toRatio)
         {
             return new Vector3(
-                    x: (float)Screen.height / (float)texture.height,
-                    y: (float)Screen.height / (float)texture.height,
+                    x: (float)Screen.height / (float)fromHeight,
+                    y: (float)Screen.height / (float)fromHeight,
                     z: 1
                 );
-        } else if (textureRatio == screenRatio)
+        }
+        else if (fromRatio == toRatio)
         {
             return new Vector3(
-                    x: (float)Screen.width / (float)texture.width,
-                    y: (float)Screen.height / (float)texture.height,
+                    x: (float)Screen.width / (float)fromWidth,
+                    y: (float)Screen.height / (float)fromHeight,
                     z: 1
                 );
-        } else
+        }
+        else
         {
             throw new Exception("this should never happen");
         }

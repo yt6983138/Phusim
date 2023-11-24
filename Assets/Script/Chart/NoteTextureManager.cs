@@ -8,6 +8,7 @@ using UnityEngine;
 public static class NoteTextureManager
 {
     private static readonly Sprite Unset = Sprite.Create(Texture2D.whiteTexture, new Rect(0, 0, Texture2D.whiteTexture.width, Texture2D.whiteTexture.height), new Vector2(0, 0));
+    public static GameObject NoteTemplate;
 
     public static Sprite Tap = Unset;
     public static Sprite TapMultiPress = Unset;

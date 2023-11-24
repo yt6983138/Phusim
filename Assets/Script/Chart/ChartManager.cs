@@ -7,12 +7,47 @@ using UnityEngine;
 public static class ChartManager
 {
     private static readonly JsonSerializerSettings _settings = new() { MissingMemberHandling = MissingMemberHandling.Ignore };
-    private static System.Diagnostics.Stopwatch Timer = new();
+    public static System.Diagnostics.Stopwatch Timer { get; private set; } = new();
 
     public static float ChartAspect { get; private set; } = Config.Configuration.ChartAspectRatio;
     public static AudioClip Bgm { get; private set; } = AudioClip.Create("Empty", 10, 2, 1, false);
     public static AudioSource BgmPlayer { get; private set; }
     public static Texture2D Background { get; private set; } = Texture2D.blackTexture;
+    public static Chart CurrentChart { get; private set; }
+    public static ChartMeta CurrentChartMeta { get; private set; }
+    public static GameObject Canvas { get; private set; }
+    public static JudgeLineManager JudgeLineManager { get; private set; }
+    public static bool HasEnd { get; private set; } = true;
+    public static int EndTimeMs { get; private set; }
+    public static float CurrnetProgress { get; } = EndTimeMs / Timer.ElapsedMilliseconds;
+    public static Camera Cam { get; private set; }
+    public static (float width, float height) ChartWindowSize { get; private set; }
+
+    public static int CurrentPerfect { get; set; } = 0;
+    public static int CurrentGood { get; set; } = 0;
+    public static int CurrentBad { get; set; } = 0;
+    public static int CurrentMiss { get; set; } = 0;
+
+    public static void InitializeEverything(Chart chart, AudioClip bgm, AudioSource player, Texture2D background, ChartMeta meta, ref GameObject objectToDrawOn, ref Camera cam)
+    {
+        if (!HasEnd)
+        {
+            throw new Exception("The chart is playing!");
+        }
+        Bgm = bgm;
+        BgmPlayer = player;
+        Background = background;
+        CurrentChart = chart;
+        CurrentChartMeta = meta;
+        EndTimeMs = (int)(Bgm.length * 1000);
+        Cam = cam;
+        Canvas = objectToDrawOn;
+        ChartWindowSize = (
+            (ChartAspect > Resource.ScreenAspectRatio) ? Screen.width : ChartAspect * (float)Screen.height,
+            (ChartAspect < Resource.ScreenAspectRatio) ? Screen.height : (float)Screen.width / ChartAspect
+            );
+        Timer.Reset();
+    }
 
     public static Chart LoadChart(string path)
     {
@@ -28,8 +63,9 @@ public static class ChartManager
                 throw new NotImplementedException();
             case ChartType.Unknown:
                 throw new Exception("Unknown chart type");
+            default:
+                goto case ChartType.Unknown;
         }
-        throw new Exception();
     }
     public static ChartType GuessChartType(dynamic chart)
     {
@@ -81,7 +117,8 @@ public static class ChartManager
             try
             {
                 return LoadMetaFromDifferentSimulator(file);
-            } catch { }
+            }
+            catch { }
         }
         throw new Exception("No meta found");
 

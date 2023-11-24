@@ -7,6 +7,8 @@ using UnityEngine;
 
 
 #pragma warning disable IDE1006 // Naming Styles
+
+
 public class NoteOfficalChart : IOfficalNotes
 {
     public short type { get; set; } // do not fix name violation on those
@@ -27,7 +29,7 @@ public class NoteOfficalChart : IOfficalNotes
             State = NoteState.Pending,
             HoldTime = this.holdTime,
             Speed = this.speed,
-            PositionX = this.positionX,
+            PositionX = this.positionX / Resource.OfficalChartPosXMagicNumber,
             PositionY = this.floorPosition
         };
         return _note;
@@ -114,7 +116,7 @@ public class judgeLineListOfficalChart : IOfficalJudgeLines
     public List<LineMoveEventsOfficalChart> judgeLineMoveEvents { get; set; }
     public List<LineRotateEventsOfficalChart> judgeLineRotateEvents { get; set; }
     public List<LineDisappearEventsOfficalChart> judgeLineDisappearEvents { get; set; } // to prevent u being confused on this one - disappear = opacity
-    public JudgeLine ToInternalFormat()
+    public JudgeLineInternalFormat ToInternalFormat()
     {
         List<Note> _notes = new();
         List<Event> _events = new();
@@ -136,7 +138,7 @@ public class judgeLineListOfficalChart : IOfficalJudgeLines
             _events.Add(chartEvent.ToInternalFormat());
         }
         _events.Sort();
-        return new JudgeLine()
+        return new JudgeLineInternalFormat()
         {
             BPM = this.bpm,
             Notes = _notes,
@@ -151,7 +153,7 @@ public class OfficalChart : IOfficalCharts
     public List<judgeLineListOfficalChart> judgeLineList { get; set; }
     public Chart ToInternalFormat()
     {
-        List<JudgeLine> _judgeLines = new();
+        List<JudgeLineInternalFormat> _judgeLines = new();
         foreach (judgeLineListOfficalChart line in this.judgeLineList)
         {
             _judgeLines.Add(line.ToInternalFormat());

@@ -112,4 +112,13 @@ public static class StaticUtils
             return default(T);
         }
     }
+    public static float GetValueFromLinearFunction(float start, float end, float length, float pos)
+    {
+        return start + ((end - start) * (pos / length));
+    }
+    public static float ChartTimeToMS(float BPM, float time)
+    {
+        // 1/(x/60) * (time / 32) * 1000
+        return (15000 * time / (8 * BPM));
+    }
 }
