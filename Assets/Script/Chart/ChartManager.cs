@@ -7,6 +7,7 @@ using UnityEngine;
 public static class ChartManager
 {
     private static readonly JsonSerializerSettings _settings = new() { MissingMemberHandling = MissingMemberHandling.Ignore };
+    private static (float width, float height)? _chartRenderSize;
     public static System.Diagnostics.Stopwatch Timer { get; private set; } = new();
 
     public static float ChartAspect { get; private set; } = Config.Configuration.ChartAspectRatio;
@@ -22,13 +23,20 @@ public static class ChartManager
     public static float CurrnetProgress { get; } = EndTimeMs / Timer.ElapsedMilliseconds;
     public static Camera Cam { get; private set; }
     public static (float width, float height) ChartWindowSize { get; private set; }
+    public static (float width, float height) ChartRenderSize
+    {
+        get
+        {
+            return _chartRenderSize ?? ChartWindowSize;
+        }
+    }
 
     public static int CurrentPerfect { get; set; } = 0;
     public static int CurrentGood { get; set; } = 0;
     public static int CurrentBad { get; set; } = 0;
     public static int CurrentMiss { get; set; } = 0;
 
-    public static void InitializeEverything(Chart chart, AudioClip bgm, AudioSource player, Texture2D background, ChartMeta meta, ref GameObject objectToDrawOn, ref Camera cam)
+    public static void InitializeEverything(Chart chart, AudioClip bgm, AudioSource player, Texture2D background, ChartMeta meta, ref GameObject objectToDrawOn, ref Camera cam, (float width, float height)? chartRenderSize)
     {
         if (!HasEnd)
         {
@@ -46,6 +54,7 @@ public static class ChartManager
             (ChartAspect > Resource.ScreenAspectRatio) ? Screen.width : ChartAspect * (float)Screen.height,
             (ChartAspect < Resource.ScreenAspectRatio) ? Screen.height : (float)Screen.width / ChartAspect
             );
+        _chartRenderSize = chartRenderSize;
         Timer.Reset();
     }
 

@@ -70,7 +70,7 @@ namespace TMPro.Examples
                     // New function which pushes (all) updated vertex data to the appropriate meshes when using either the Mesh Renderer or CanvasRenderer.
                     m_TextComponent.UpdateVertexData(TMP_VertexDataUpdateFlags.Colors32);
 
-                    // This last process could be done to only update the vertex data that has changed as opposed to all of the vertex data but it would require extra steps and knowing what type of renderer is used.
+                    // NoteObj last process could be done to only update the vertex data that has changed as opposed to all of the vertex data but it would require extra steps and knowing what type of renderer is used.
                     // These extra steps would be a performance optimization but it is unlikely that such optimization will be necessary.
                 }
 

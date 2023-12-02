@@ -130,7 +130,7 @@ namespace TMPro.Examples
 
                 if (current_Count <= 3)
                 {
-                    //Debug.Log("Fading Counter ... " + current_Count.ToString("f2"));
+                    //Debug.Log("Fading _multipressCounter ... " + current_Count.ToString("f2"));
                     alpha = Mathf.Clamp(alpha - (Time.deltaTime / fadeDuration) * 255, 0, 255);
                 }
 
@@ -185,7 +185,7 @@ namespace TMPro.Examples
 
                 if (current_Count <= 3)
                 {
-                    //Debug.Log("Fading Counter ... " + current_Count.ToString("f2"));
+                    //Debug.Log("Fading _multipressCounter ... " + current_Count.ToString("f2"));
                     alpha = Mathf.Clamp(alpha - (Time.deltaTime / fadeDuration) * 255, 0, 255);
                 }
 

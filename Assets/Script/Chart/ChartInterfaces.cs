@@ -4,20 +4,40 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-interface IOfficalChartEvents
+public interface IOfficalChartEvents
 {
-    public Event ToInternalFormat(); // tbh idk why im doing this lmao
+
+    /// <summary>
+    /// 1st beat = 8, 2nd beat = 16 etc
+    /// </summary>
+    public float startTime { get; set; } // cant fix name violation bruh
+    /// <summary>
+    ///  1st beat = 8, 2nd beat = 16 etc
+    /// </summary>
+    public float endTime { get; set; }
+    public IInternalEventFormat ToInternalFormat(); // tbh idk why im doing this lmao
 }
-interface IOfficalNotes
+public interface IOfficalNotes
 {
     public Note ToInternalFormat(bool isAbove);
 }
-interface IOfficalJudgeLines
+public interface IOfficalJudgeLines
 {
     public JudgeLineInternalFormat ToInternalFormat(); 
 }
-interface IOfficalCharts
+public interface IOfficalCharts
 {
     public Chart ToInternalFormat();
 }
 
+public interface IInternalEventFormat
+{
+    /// <summary>
+    /// 1st beat = 8, 2nd beat = 16 etc
+    /// </summary>
+    public float StartTime { get; set; }
+    /// <summary>
+    ///  1st beat = 8, 2nd beat = 16 etc
+    /// </summary>
+    public float EndTime { get; set; }
+}

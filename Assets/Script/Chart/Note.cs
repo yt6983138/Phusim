@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,6 +9,9 @@ using UnityEngine;
 
 public class Note : IComparable<Note> 
 {
+    [JsonIgnore]
+    public GameObject NoteObj { get; set; }
+
     public NoteState State { get; set; }
     public bool RequireFlick { get; set; }
     public bool RequireTap { get; set; }
@@ -26,7 +30,8 @@ public class Note : IComparable<Note>
     /// </summary>
     public float Speed { get; set; } 
     /// <summary>
-    /// -9 ~ 9 :thonking:
+    /// ok lets change the define-- 
+    /// 0 ~ 1
     /// </summary>
     public float PositionX { get; set; }
     /// <summary>
@@ -49,8 +54,21 @@ public class Note : IComparable<Note>
     /// basically time out, in ms
     /// </summary>
     public float HitTime { get; set; }
+
+    private int PosOnScreen;
+    private Vector3 _notePos;
     public int CompareTo(Note note)
     {
         return this.Id.CompareTo(note.Time);
+    }
+    public void Update(int timeMS, in int[] notePosArray, in Camera cam)
+    {
+        RectTransformUtility.ScreenPointToWorldPointInRectangle(
+            (RectTransform)ChartManager.Canvas.transform,
+            new Vector2(PosOnScreen, notePosArray[timeMS + 200]),
+            cam,
+            out this._notePos
+       );
+        this.NoteObj.transform.position = this._notePos;
     }
 }

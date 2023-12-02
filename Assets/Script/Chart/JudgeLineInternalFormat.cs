@@ -5,22 +5,25 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class JudgeLineInternalFormat
 {
     // migrating smth
     [JsonIgnore]
-    private long maxTime;
+    private long _maxTime;
     [JsonIgnore]
-    private int[] Counter;
+    private int[] _multipressCounter;
     [JsonIgnore]
-    private bool hasComputed = false;
+    private bool _hasComputed = false;
     // migrating end
+    [JsonIgnore]
+    private const float _zPlaneLength = 1000f;
 
     public int Id { get; set; }
     public float BPM { get; set; }
     public List<Note> Notes { get; set; }
-    public List<Event> Events { get; set; }
+    public List<IInternalEventFormat> Events { get; set; }
     public bool UseOverrideTexture { get; set; }
 
     /// <summary>
@@ -30,26 +33,27 @@ public class JudgeLineInternalFormat
     [JsonIgnore]
     public byte[] OpacityArray { get; private set; }
     /// <summary>
-    /// why short: -32768 ~ 32767 is enough for rotation<br/>
     /// u can understand x, y ,z right? 0~360 euler degrees
     /// </summary>
     [JsonIgnore]
-    public (short x, short y, short z)[] RotationArray { get; private set; }
+    public Vector3[] RotationArray { get; private set; }
     /// <summary>
-    /// its position, 0 ~ 1(0 ~ window right)
+    /// its position, 0 ~ window right
     /// </summary>
     [JsonIgnore]
-    public (float x, float y, float z)[] PositionArray { get; private set; }
+    public Vector3[] PositionArray { get; private set; }
     /// <summary>
     /// todo: add comment
     /// </summary>
     [JsonIgnore]
     public int[] NotePositionArray { get; private set; }
-
+    /// <summary>
+    /// should be cleaned after use
+    /// </summary>
     [JsonIgnore]
-    public List<GameObject> NoteObjects { get; private set; } = new();
+    private float[] SpeedArray { get; set; }
     [JsonIgnore]
-    private float LastSpeedEventEndPos = 0;
+    public GameObject LineObj { get; set; }
     public void Process()
     {
         Notes.Sort();
@@ -58,7 +62,7 @@ public class JudgeLineInternalFormat
         ComputeMultiPress();
         foreach (Note note in Notes)
         {
-            note.MultiPress = Counter[note.Time] > 1; // check multi press
+            note.MultiPress = _multipressCounter[note.Time] > 1; // check multi press
             note.State = NoteState.DoneLoading;
         }
     }
@@ -71,74 +75,105 @@ public class JudgeLineInternalFormat
     }
     private void ComputeMultiPress()
     {
-        if (hasComputed) { return; }
-        maxTime = Notes.Last().Time;
-        Counter = new int[maxTime];
+        if (_hasComputed) { return; }
+        _maxTime = Notes.Last().Time;
+        _multipressCounter = new int[_maxTime];
         foreach (Note note in Notes)
         {
-            Counter[note.Time]++;
+            _multipressCounter[note.Time]++;
         }
-        hasComputed = true;
+        _hasComputed = true;
     }
     public void InitializeNotes()
     {
         foreach (Note note in this.Notes)
         {
-            GameObject noteObj = GameObject.Instantiate(NoteTextureManager.NoteTemplate, ChartManager.JudgeLineManager.JudgeLinesObject[this.Id].transform);
-            Vector3 pos = Vector2.zero;
-            RectTransformUtility.ScreenPointToWorldPointInRectangle(
-                noteObj.GetComponent<RectTransform>(),
-                new Vector2(note.PositionX * 0.1f * ChartManager.ChartWindowSize.width, note.PositionY * note.Speed * ChartManager.ChartWindowSize.height * 0.5f),
-                ChartManager.Cam,
-                out pos
-            );
-            noteObj.transform.position = pos;
+            note.NoteObj = GameObject.Instantiate(NoteTextureManager.NoteTemplate, ChartManager.JudgeLineManager.JudgeLinesObject[this.Id].transform);
+            Image component = note.NoteObj.AddComponent<Image>();
+            component.sprite = NoteTextureManager.GetSpriteForNote(note);
         }
     }
-    public void BuildEventArrays(int? chartLength = null)
+    public void BuildEventArrays(int? chartLengthMS = null)
     {
-        int length = chartLength ?? ChartManager.EndTimeMs;
+        int length = chartLengthMS ?? ChartManager.EndTimeMs;
         this.OpacityArray = new byte[length];
-        this.PositionArray = new (float x, float y, float z)[length];
-        this.RotationArray = new (short x, short y, short z)[length];
-        this.NotePositionArray = new int[length];
-        foreach (Event chartEvent in this.Events)
+        this.RotationArray = new Vector3[length];
+        this.PositionArray = new Vector3[length];
+        this.NotePositionArray = new int[length + 200]; // for animation
+        // this.LastSpeedEvent = new()
+        // {
+        //     StartTime = 0,
+        //     EndTime = length,
+        //     Speed = 1
+        // };
+        (float width, float height) = ChartManager.ChartRenderSize;
+        List<InternalSpeedEvent> speedEvents = new();
+        foreach (IInternalEventFormat chartEvent in this.Events)
         {
             int startTime = (int)StaticUtils.ChartTimeToMS(chartEvent.StartTime, this.BPM);
             int endTime = (int)StaticUtils.ChartTimeToMS(chartEvent.EndTime, this.BPM);
 
-            switch (chartEvent.EventType)
+            switch (chartEvent)
             {
-                case JudgeLineEventType.SpeedEvent:
-                    break;
-                case JudgeLineEventType.MoveEvent:
+                case InternalSpeedEvent @event:
+                    speedEvents.Add(@event);
                     for (int i = startTime; i <= Math.Min(endTime, length); i++)
                     {
-                        this.PositionArray[i].x = StaticUtils.GetValueFromLinearFunction(chartEvent.MovementStart.x, chartEvent.MovementEnd.x, endTime - startTime, i);
-                        this.PositionArray[i].y = StaticUtils.GetValueFromLinearFunction(chartEvent.MovementStart.y, chartEvent.MovementEnd.y, endTime - startTime, i);
-                        this.PositionArray[i].z = StaticUtils.GetValueFromLinearFunction(chartEvent.MovementStart.z, chartEvent.MovementEnd.z, endTime - startTime, i);
+                        this.SpeedArray[i] = @event.Speed;
                     }
+                    //this.LastSpeedEvent = chartEvent;
                     break;
-                case JudgeLineEventType.RotateEvent:
+                case InternalMovementEvent @event:
                     for (int i = startTime; i <= Math.Min(endTime, length); i++)
                     {
-                        this.RotationArray[i].x = (short)(StaticUtils.GetValueFromLinearFunction(chartEvent.RotationStart.x, chartEvent.RotationEnd.x, endTime - startTime, i) * 360);
-                        this.RotationArray[i].y = (short)(StaticUtils.GetValueFromLinearFunction(chartEvent.RotationStart.y, chartEvent.RotationEnd.y, endTime - startTime, i) * 360);
-                        this.RotationArray[i].z = (short)(StaticUtils.GetValueFromLinearFunction(chartEvent.RotationStart.z, chartEvent.RotationEnd.z, endTime - startTime, i) * 360);
+                        this.PositionArray[i].x = StaticUtils.GetValueFromLinearFunction(@event.MovementStart.x, @event.MovementEnd.x, endTime - startTime, i) * width;
+                        this.PositionArray[i].y = StaticUtils.GetValueFromLinearFunction(@event.MovementStart.y, @event.MovementEnd.y, endTime - startTime, i) * height;
+                        this.PositionArray[i].z = StaticUtils.GetValueFromLinearFunction(@event.MovementStart.z, @event.MovementEnd.z, endTime - startTime, i) * _zPlaneLength;
                     }
                     break;
-                case JudgeLineEventType.OpacityEvent:
+                case InternalRotationEvent @event:
                     for (int i = startTime; i <= Math.Min(endTime, length); i++)
                     {
-                        this.OpacityArray[i] = (byte)(Math.Min(StaticUtils.GetValueFromLinearFunction(chartEvent.StartOpacity, chartEvent.EndOpacity, endTime - startTime, i) * 255, 255));
+                        this.RotationArray[i].x = StaticUtils.GetValueFromLinearFunction(@event.RotationStart.x, @event.RotationEnd.x, endTime - startTime, i) * 360;
+                        this.RotationArray[i].y = StaticUtils.GetValueFromLinearFunction(@event.RotationStart.y, @event.RotationEnd.y, endTime - startTime, i) * 360;
+                        this.RotationArray[i].z = StaticUtils.GetValueFromLinearFunction(@event.RotationStart.z, @event.RotationEnd.z, endTime - startTime, i) * 360;
                     }
                     break;
-                case JudgeLineEventType.UnsetEvent:
-                    goto default;
+                case InternalOpacityEvent @event:
+                    for (int i = startTime; i <= Math.Min(endTime, length); i++)
+                    {
+                        this.OpacityArray[i] = (byte)(Math.Min(StaticUtils.GetValueFromLinearFunction(@event.StartOpacity, @event.EndOpacity, endTime - startTime, i) * 255, 255));
+                    }
+                    break;
                 default:
-                    LogHandler.Log(LogHandler.Warning, $"Found invaild event: {chartEvent.ToString()}");
+                    LogHandler.Log(LogHandler.Warning, $"Found invaild event: {chartEvent}");
                     break;
             }
         }
+        float sum = 0;
+        for (int i = 0; i < this.NotePositionArray.Length - 200; i++)
+        {
+            this.NotePositionArray[i + 200] = (int)sum;
+            sum += this.SpeedArray[i] * height * 1000;
+        }
+        sum = 0;
+        for (int i = 199; i >= 0; i--)
+        {
+            sum -= this.SpeedArray[0] * height * 1000; // late judge animation purpose
+            this.NotePositionArray[i] = (int)sum;
+        }
+    }
+    public async void Update()
+    {
+        int currentMS = (int)ChartManager.Timer.ElapsedMilliseconds;
+        await Task.Run(() =>
+        {
+            foreach (Note note in this.Notes)
+            {
+                note.Update(currentMS, this.NotePositionArray, ChartManager.Cam);
+            }
+        });
+        this.LineObj.transform.position = this.PositionArray[currentMS];
+        this.LineObj.transform.eulerAngles = this.RotationArray[currentMS];
     }
 }

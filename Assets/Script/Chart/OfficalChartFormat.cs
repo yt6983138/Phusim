@@ -40,14 +40,13 @@ public class LineSpeedEventsOfficalChart : IOfficalChartEvents
     public float startTime { get; set; }
     public float endTime { get; set; }
     public float value { get; set; }
-    public Event ToInternalFormat()
+    public IInternalEventFormat ToInternalFormat()
     {
-        return new Event()
+        return new InternalSpeedEvent()
         {
             StartTime = this.startTime,
             EndTime = this.endTime,
-            Speed = this.value, //tbh phi naming is kinda shitty
-            EventType = JudgeLineEventType.SpeedEvent
+            Speed = this.value //tbh phi naming is kinda shitty
         };
     }
 }
@@ -59,15 +58,14 @@ public class LineMoveEventsOfficalChart : IOfficalChartEvents
     public float end { get; set; }
     public float start2 { get; set; }
     public float end2 { get; set; }
-    public Event ToInternalFormat()
+    public IInternalEventFormat ToInternalFormat()
     {
-        return new Event()
+        return new InternalMovementEvent()
         {
             StartTime = this.startTime,
             EndTime = this.endTime,
-            MovementStart = new Vector3() { x = this.start, y = this.end, z = 0 },
-            MovementEnd = new Vector3() { x = this.start2, y = this.end2, z = 0 },
-            EventType = JudgeLineEventType.MoveEvent
+            MovementStart = new Vector3() { x = this.start, y = this.start2, z = 0 },
+            MovementEnd = new Vector3() { x = this.end, y = this.end2, z = 0 }
         };
     }
 }
@@ -77,15 +75,14 @@ public class LineRotateEventsOfficalChart : IOfficalChartEvents
     public float endTime { get; set; }
     public float start { get; set; }
     public float end { get; set; }
-    public Event ToInternalFormat()
+    public IInternalEventFormat ToInternalFormat()
     {
-        return new Event()
+        return new InternalRotationEvent()
         {
             StartTime = this.startTime,
             EndTime = this.endTime,
             RotationStart = new Vector3() { x = 0, y = 0, z = this.start },
-            RotationEnd = new Vector3() { x = 0, y = 0, z = this.end },
-            EventType = JudgeLineEventType.RotateEvent
+            RotationEnd = new Vector3() { x = 0, y = 0, z = this.end }
         };
     }
 }
@@ -95,15 +92,14 @@ public class LineDisappearEventsOfficalChart : IOfficalChartEvents // bro why di
     public float endTime { get; set; }
     public float start { get; set; }
     public float end { get; set; }
-    public Event ToInternalFormat()
+    public IInternalEventFormat ToInternalFormat()
     {
-        return new Event()
+        return new InternalOpacityEvent()
         {
             StartTime = this.startTime,
             EndTime = this.endTime,
             StartOpacity = this.start,
-            EndOpacity = this.end,
-            EventType = JudgeLineEventType.OpacityEvent
+            EndOpacity = this.end
         };
     }
 }
@@ -119,7 +115,7 @@ public class judgeLineListOfficalChart : IOfficalJudgeLines
     public JudgeLineInternalFormat ToInternalFormat()
     {
         List<Note> _notes = new();
-        List<Event> _events = new();
+        List<IInternalEventFormat> _events = new();
         List<IOfficalChartEvents> _officalChartEvents = new();
         _officalChartEvents.AddRange(this.speedEvents);
         _officalChartEvents.AddRange(this.judgeLineMoveEvents);

@@ -107,7 +107,7 @@ namespace TMPro.Examples
                     Vector2 charMidBasline = (vertices[vertexIndex + 0] + vertices[vertexIndex + 2]) / 2;
 
                     // Need to translate all 4 vertices of the character to aligned with middle of character / baseline.
-                    // This is needed so the matrix TRS is applied at the origin for each character.
+                    // NoteObj is needed so the matrix TRS is applied at the origin for each character.
                     Vector3 offset = charMidBasline;
 
                     // Translate the character to the middle baseline.

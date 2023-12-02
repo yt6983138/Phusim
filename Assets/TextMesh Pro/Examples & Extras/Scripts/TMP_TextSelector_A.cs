@@ -21,7 +21,7 @@ namespace TMPro.Examples
             m_TextMeshPro = gameObject.GetComponent<TextMeshPro>();
             m_Camera = Camera.main;
 
-            // Force generation of the text object so we have valid data to work with. This is needed since LateUpdate() will be called before the text object has a chance to generated when entering play mode.
+            // Force generation of the text object so we have valid data to work with. NoteObj is needed since LateUpdate() will be called before the text object has a chance to generated when entering play mode.
             m_TextMeshPro.ForceMeshUpdate();
         }
 
