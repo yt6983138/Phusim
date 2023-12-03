@@ -11,15 +11,15 @@ using UnityEngine;
 
 public class NoteOfficalChart : IOfficalNotes
 {
-    public short type { get; set; } // do not fix name violation on those
+    public byte type { get; set; } // do not fix name violation on those
     public int time { get; set; }
     public float holdTime { get; set; }
     public float speed { get; set; }
     public float positionX { get; set; }
     public float floorPosition { get; set; }
-    public Note ToInternalFormat(bool isAbove)
+    public NoteInternalFormat ToInternalFormat(bool isAbove)
     {
-        Note _note = new()
+        NoteInternalFormat _note = new()
         {
             RequireTap = (type == 1) || (type == 3),
             RequireFlick = (type == 4),
@@ -114,7 +114,7 @@ public class judgeLineListOfficalChart : IOfficalJudgeLines
     public List<LineDisappearEventsOfficalChart> judgeLineDisappearEvents { get; set; } // to prevent u being confused on this one - disappear = opacity
     public JudgeLineInternalFormat ToInternalFormat()
     {
-        List<Note> _notes = new();
+        List<NoteInternalFormat> _notes = new();
         List<IInternalEventFormat> _events = new();
         List<IOfficalChartEvents> _officalChartEvents = new();
         _officalChartEvents.AddRange(this.speedEvents);

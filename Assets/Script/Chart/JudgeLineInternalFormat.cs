@@ -22,7 +22,7 @@ public class JudgeLineInternalFormat
 
     public int Id { get; set; }
     public float BPM { get; set; }
-    public List<Note> Notes { get; set; }
+    public List<NoteInternalFormat> Notes { get; set; }
     public List<IInternalEventFormat> Events { get; set; }
     public bool UseOverrideTexture { get; set; }
 
@@ -51,8 +51,6 @@ public class JudgeLineInternalFormat
     /// should be cleaned after use
     /// </summary>
     [JsonIgnore]
-    private float[] SpeedArray { get; set; }
-    [JsonIgnore]
     public GameObject LineObj { get; set; }
     public void Process()
     {
@@ -60,9 +58,13 @@ public class JudgeLineInternalFormat
         Events.Sort();
         AssignIds();
         ComputeMultiPress();
-        foreach (Note note in Notes)
+        foreach (NoteInternalFormat note in this.Notes)
         {
             note.MultiPress = _multipressCounter[note.Time] > 1; // check multi press
+            note.Initalize(this.BPM, (int)ChartManager.ChartRenderSize.width);
+            note.NoteObj = GameObject.Instantiate(NoteTextureManager.NoteTemplate, ChartManager.JudgeLineManager.JudgeLinesObject[this.Id].transform);
+            Image component = note.NoteObj.AddComponent<Image>();
+            component.sprite = NoteTextureManager.GetSpriteForNote(note);
             note.State = NoteState.DoneLoading;
         }
     }
@@ -78,20 +80,11 @@ public class JudgeLineInternalFormat
         if (_hasComputed) { return; }
         _maxTime = Notes.Last().Time;
         _multipressCounter = new int[_maxTime];
-        foreach (Note note in Notes)
+        foreach (NoteInternalFormat note in Notes)
         {
             _multipressCounter[note.Time]++;
         }
         _hasComputed = true;
-    }
-    public void InitializeNotes()
-    {
-        foreach (Note note in this.Notes)
-        {
-            note.NoteObj = GameObject.Instantiate(NoteTextureManager.NoteTemplate, ChartManager.JudgeLineManager.JudgeLinesObject[this.Id].transform);
-            Image component = note.NoteObj.AddComponent<Image>();
-            component.sprite = NoteTextureManager.GetSpriteForNote(note);
-        }
     }
     public void BuildEventArrays(int? chartLengthMS = null)
     {
@@ -100,6 +93,7 @@ public class JudgeLineInternalFormat
         this.RotationArray = new Vector3[length];
         this.PositionArray = new Vector3[length];
         this.NotePositionArray = new int[length + 200]; // for animation
+        float[] SpeedArray = new float[length];
         // this.LastSpeedEvent = new()
         // {
         //     StartTime = 0,
@@ -119,7 +113,7 @@ public class JudgeLineInternalFormat
                     speedEvents.Add(@event);
                     for (int i = startTime; i <= Math.Min(endTime, length); i++)
                     {
-                        this.SpeedArray[i] = @event.Speed;
+                        SpeedArray[i] = @event.Speed;
                     }
                     //this.LastSpeedEvent = chartEvent;
                     break;
@@ -154,12 +148,12 @@ public class JudgeLineInternalFormat
         for (int i = 0; i < this.NotePositionArray.Length - 200; i++)
         {
             this.NotePositionArray[i + 200] = (int)sum;
-            sum += this.SpeedArray[i] * height * 1000;
+            sum += SpeedArray[i] * height * 1000;
         }
         sum = 0;
         for (int i = 199; i >= 0; i--)
         {
-            sum -= this.SpeedArray[0] * height * 1000; // late judge animation purpose
+            sum -= SpeedArray[0] * height * 1000; // late judge animation purpose
             this.NotePositionArray[i] = (int)sum;
         }
     }
@@ -168,7 +162,7 @@ public class JudgeLineInternalFormat
         int currentMS = (int)ChartManager.Timer.ElapsedMilliseconds;
         await Task.Run(() =>
         {
-            foreach (Note note in this.Notes)
+            foreach (NoteInternalFormat note in this.Notes)
             {
                 note.Update(currentMS, this.NotePositionArray, ChartManager.Cam);
             }

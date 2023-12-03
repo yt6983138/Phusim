@@ -20,7 +20,7 @@ public class JudgeLineManager
             JudgeLinesObject[line.Id] = GameObject.Instantiate(JudgeLineTemplate, Parent.transform);
         }
     }
-    public void AddNotesToLine(int lineId, Note note)
+    public void AddNotesToLine(int lineId, NoteInternalFormat note)
     {
         // GameObject.Instantiate()
         throw new NotImplementedException();

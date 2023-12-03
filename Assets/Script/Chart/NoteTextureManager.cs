@@ -23,11 +23,11 @@ public static class NoteTextureManager
 
     private static Dictionary<int, Sprite> TextureOverride = new();
 
-    public static Sprite GetSpriteForNote(in Note note)
+    public static Sprite GetSpriteForNote(in NoteInternalFormat note)
     {
         if (note.UseOverrideTexture)
         {
-            return TextureOverride.ContainsKey(note.Id) ? TextureOverride[note.Id] : throw new Exception(string.Format("Note id {0} do not have texture override registered!", note.Id.ToString()));
+            return TextureOverride.ContainsKey(note.Id) ? TextureOverride[note.Id] : throw new Exception(string.Format("NoteInternalFormat id {0} do not have texture override registered!", note.Id.ToString()));
         }
         switch ((note.RequireTap, note.RequireFlick, note.MultiPress, note.HoldTime > 0))
         {

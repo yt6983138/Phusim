@@ -19,7 +19,7 @@ public interface IOfficalChartEvents
 }
 public interface IOfficalNotes
 {
-    public Note ToInternalFormat(bool isAbove);
+    public NoteInternalFormat ToInternalFormat(bool isAbove);
 }
 public interface IOfficalJudgeLines
 {

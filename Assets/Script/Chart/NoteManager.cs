@@ -11,7 +11,7 @@ public class NoteManager
     public List<GameObject> NoteObjects { get; set; }
     public void InitializeNotes()
     {
-        foreach (Note note in AssignedLine.Notes)
+        foreach (NoteInternalFormat note in AssignedLine.Notes)
         {
             NoteObjects[note.Id] = GameObject.Instantiate(NoteTextureManager.NoteTemplate, ChartManager.JudgeLineManager.JudgeLinesObject[AssignedLine.Id].transform);
         }

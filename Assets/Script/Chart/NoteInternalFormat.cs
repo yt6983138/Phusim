@@ -5,14 +5,23 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.UI;
 
-
-public class Note : IComparable<Note> 
+public class NoteInternalFormat : IComparable<NoteInternalFormat>
 {
     [JsonIgnore]
     public GameObject NoteObj { get; set; }
 
+    [JsonIgnore]
     public NoteState State { get; set; }
+    /// <summary>
+    /// basically time out, in ms
+    /// </summary>
+    [JsonIgnore]
+    public float HitTime { get; set; }
+    [JsonIgnore]
+    public bool IsVisible { get; private set; } = false;
+
     public bool RequireFlick { get; set; }
     public bool RequireTap { get; set; }
     public bool IsFake { get; set; }
@@ -23,15 +32,16 @@ public class Note : IComparable<Note>
     /// <summary>
     /// so basically 4 beat = 32, 1 beat = 8, and like 1/3 = 11(32/3), 0:1/4 in rpe = 8
     /// </summary>
-    public int Time { get; set; } 
+    public int Time { get; set; }
     public float HoldTime { get; set; }
     /// <summary>
-    /// speed, this * judgeline speed = real speed, does not affect floorPos
+    /// speed, this * judgeline speed = real speed, does not affect floorPos <br/>
+    /// todo: add defintion
     /// </summary>
-    public float Speed { get; set; } 
+    public float Speed { get; set; }
     /// <summary>
-    /// ok lets change the define-- 
-    /// 0 ~ 1
+    /// ok lets change the define-- <br/>
+    /// -1 ~ 1
     /// </summary>
     public float PositionX { get; set; }
     /// <summary>
@@ -49,15 +59,13 @@ public class Note : IComparable<Note>
     /// </example>
     /// (just floorPosition in offical chart lmao)
     /// </summary>
-    public float PositionY { get; set; } 
-    /// <summary>
-    /// basically time out, in ms
-    /// </summary>
-    public float HitTime { get; set; }
+    public float PositionY { get; set; }
+    public int VisibleSinceTimeMS { get; set; }
 
     private int PosOnScreen;
     private Vector3 _notePos;
-    public int CompareTo(Note note)
+    private int TimeMS;
+    public int CompareTo(NoteInternalFormat note)
     {
         return this.Id.CompareTo(note.Time);
     }
@@ -65,10 +73,20 @@ public class Note : IComparable<Note>
     {
         RectTransformUtility.ScreenPointToWorldPointInRectangle(
             (RectTransform)ChartManager.Canvas.transform,
-            new Vector2(PosOnScreen, notePosArray[timeMS + 200]),
+            new Vector2(PosOnScreen, notePosArray[Math.Max(this.TimeMS - timeMS + 200, 0)] * this.Speed),
             cam,
             out this._notePos
-       );
+        );
         this.NoteObj.transform.position = this._notePos;
+        if (!this.IsVisible && TimeMS > this.VisibleSinceTimeMS)
+        { //   ^ to prevent use getcomponent every update
+            this.NoteObj.GetComponent<Image>().color = new Color(1, 1, 1, 1);
+            this.IsVisible = true;
+        }
+    }
+    public void Initalize(float bpm, int chartWidth)
+    {
+        this.TimeMS = (int)StaticUtils.ChartTimeToMS(bpm, this.Time);
+        PosOnScreen = (int)(chartWidth / 2 * this.PositionX);
     }
 }
