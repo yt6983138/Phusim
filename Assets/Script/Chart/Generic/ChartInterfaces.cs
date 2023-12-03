@@ -27,7 +27,7 @@ public interface IOfficalJudgeLines
 }
 public interface IOfficalCharts
 {
-    public Chart ToInternalFormat();
+    public ChartInternalFormat ToInternalFormat();
 }
 
 public interface IInternalEventFormat

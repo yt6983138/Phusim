@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -13,7 +14,7 @@ public class NoteInternalFormat : IComparable<NoteInternalFormat>
     public GameObject NoteObj { get; set; }
 
     [JsonIgnore]
-    public NoteState State { get; set; }
+    public NoteState State { get; private set; } = NoteState.Pending;
     /// <summary>
     /// basically time out, in ms
     /// </summary>
@@ -21,6 +22,8 @@ public class NoteInternalFormat : IComparable<NoteInternalFormat>
     public float HitTime { get; set; }
     [JsonIgnore]
     public bool IsVisible { get; private set; } = false;
+    [JsonIgnore]
+    public int? HitJudgeMS { get; private set; } = null;
 
     public bool RequireFlick { get; set; }
     public bool RequireTap { get; set; }
@@ -62,31 +65,39 @@ public class NoteInternalFormat : IComparable<NoteInternalFormat>
     public float PositionY { get; set; }
     public int VisibleSinceTimeMS { get; set; }
 
-    private int PosOnScreen;
+    // private int PosOnScreen;
     private Vector3 _notePos;
     private int TimeMS;
+    private Color _noteColor;
+    private Vector2 _posOnScreen;
     public int CompareTo(NoteInternalFormat note)
     {
         return this.Id.CompareTo(note.Time);
     }
     public void Update(int timeMS, in int[] notePosArray, in Camera cam)
     {
+        this._posOnScreen.y = notePosArray[Math.Max(this.TimeMS - timeMS + 200, 0)] * this.Speed;
         RectTransformUtility.ScreenPointToWorldPointInRectangle(
             (RectTransform)ChartManager.Canvas.transform,
-            new Vector2(PosOnScreen, notePosArray[Math.Max(this.TimeMS - timeMS + 200, 0)] * this.Speed),
+            this._posOnScreen,
             cam,
             out this._notePos
         );
         this.NoteObj.transform.position = this._notePos;
         if (!this.IsVisible && TimeMS > this.VisibleSinceTimeMS)
         { //   ^ to prevent use getcomponent every update
-            this.NoteObj.GetComponent<Image>().color = new Color(1, 1, 1, 1);
+            this._noteColor.a = 1;
+            this.NoteObj.GetComponent<Image>().color = this._noteColor;
             this.IsVisible = true;
         }
     }
-    public void Initalize(float bpm, int chartWidth)
+    public void Initalize(float bpm, int chartWidth, in JudgeLineInternalFormat parent)
     {
         this.TimeMS = (int)StaticUtils.ChartTimeToMS(bpm, this.Time);
-        PosOnScreen = (int)(chartWidth / 2 * this.PositionX);
+        _posOnScreen = new Vector2(chartWidth / 2 * this.PositionX, 0);
+        this.NoteObj = GameObject.Instantiate(NoteTextureManager.NoteTemplate, parent.LineObj.transform);
+        Image component = this.NoteObj.AddComponent<Image>();
+        component.sprite = NoteTextureManager.GetSpriteForNote(this);
+        this.State = NoteState.DoneLoading;
     }
 }

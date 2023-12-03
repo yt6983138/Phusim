@@ -14,7 +14,7 @@ public static class ChartManager
     public static AudioClip Bgm { get; private set; } = AudioClip.Create("Empty", 10, 2, 1, false);
     public static AudioSource BgmPlayer { get; private set; }
     public static Texture2D Background { get; private set; } = Texture2D.blackTexture;
-    public static Chart CurrentChart { get; private set; }
+    public static ChartInternalFormat CurrentChart { get; private set; }
     public static ChartMeta CurrentChartMeta { get; private set; }
     public static GameObject Canvas { get; private set; }
     public static JudgeLineManager JudgeLineManager { get; private set; }
@@ -36,7 +36,7 @@ public static class ChartManager
     public static int CurrentBad { get; set; } = 0;
     public static int CurrentMiss { get; set; } = 0;
 
-    public static void InitializeEverything(Chart chart, AudioClip bgm, AudioSource player, Texture2D background, ChartMeta meta, ref GameObject objectToDrawOn, ref Camera cam, (float width, float height)? chartRenderSize)
+    public static void InitializeEverything(ChartInternalFormat chart, AudioClip bgm, AudioSource player, Texture2D background, ChartMeta meta, ref GameObject objectToDrawOn, ref Camera cam, (float width, float height)? chartRenderSize)
     {
         if (!HasEnd)
         {
@@ -58,7 +58,7 @@ public static class ChartManager
         Timer.Reset();
     }
 
-    public static Chart LoadChart(string path)
+    public static ChartInternalFormat LoadChart(string path)
     {
         //dynamic chart = Serializer.DeserializeJson<dynamic>(path);
         //UnityEditor.AssetDatabase.LoadAssetAtPath
@@ -67,7 +67,7 @@ public static class ChartManager
             case ChartType.Offical:
                 return Serializer.DeserializeJson<OfficalChart>(path, _settings).ToInternalFormat();
             case ChartType.Phusim:
-                return Serializer.DeserializeJson<Chart>(path, _settings);
+                return Serializer.DeserializeJson<ChartInternalFormat>(path, _settings);
             case ChartType.Rpe:
                 throw new NotImplementedException();
             case ChartType.Unknown:

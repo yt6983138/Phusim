@@ -52,8 +52,16 @@ public class JudgeLineInternalFormat
     /// </summary>
     [JsonIgnore]
     public GameObject LineObj { get; set; }
-    public void Process()
+    [JsonIgnore]
+    private Image _component;
+    [JsonIgnore]
+    private Color _lineColor;
+    public void Initalize(in GameObject canva)
     {
+        this.LineObj = GameObject.Instantiate(NoteTextureManager.NoteTemplate, canva.transform);
+        this._component = this.LineObj.AddComponent<Image>();
+        this._component.sprite = JudgeLineTextureManager.GetSpriteForLine(this);
+        this._lineColor = new Color(1, 1, 1, 1);
         Notes.Sort();
         Events.Sort();
         AssignIds();
@@ -61,11 +69,7 @@ public class JudgeLineInternalFormat
         foreach (NoteInternalFormat note in this.Notes)
         {
             note.MultiPress = _multipressCounter[note.Time] > 1; // check multi press
-            note.Initalize(this.BPM, (int)ChartManager.ChartRenderSize.width);
-            note.NoteObj = GameObject.Instantiate(NoteTextureManager.NoteTemplate, ChartManager.JudgeLineManager.JudgeLinesObject[this.Id].transform);
-            Image component = note.NoteObj.AddComponent<Image>();
-            component.sprite = NoteTextureManager.GetSpriteForNote(note);
-            note.State = NoteState.DoneLoading;
+            note.Initalize(this.BPM, (int)ChartManager.ChartRenderSize.width, this);
         }
     }
     private void AssignIds()
@@ -140,7 +144,7 @@ public class JudgeLineInternalFormat
                     }
                     break;
                 default:
-                    LogHandler.Log(LogHandler.Warning, $"Found invaild event: {chartEvent}");
+                    LogHandler.Log(LogHandler.Warning, $"Found invaild/undefined event: {chartEvent}");
                     break;
             }
         }
@@ -160,6 +164,10 @@ public class JudgeLineInternalFormat
     public async void Update()
     {
         int currentMS = (int)ChartManager.Timer.ElapsedMilliseconds;
+        this.LineObj.transform.position = this.PositionArray[currentMS];
+        this.LineObj.transform.eulerAngles = this.RotationArray[currentMS];
+        this._lineColor.a = 0.003921569f * this.OpacityArray[currentMS];
+        this._component.color = this._lineColor;
         await Task.Run(() =>
         {
             foreach (NoteInternalFormat note in this.Notes)
@@ -167,7 +175,5 @@ public class JudgeLineInternalFormat
                 note.Update(currentMS, this.NotePositionArray, ChartManager.Cam);
             }
         });
-        this.LineObj.transform.position = this.PositionArray[currentMS];
-        this.LineObj.transform.eulerAngles = this.RotationArray[currentMS];
     }
 }

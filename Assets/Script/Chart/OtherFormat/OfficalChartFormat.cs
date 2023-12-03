@@ -26,7 +26,6 @@ public class NoteOfficalChart : IOfficalNotes
             IsAbove = isAbove,
             UseOverrideTexture = false,
             Time = this.time,
-            State = NoteState.Pending,
             HoldTime = this.holdTime,
             Speed = this.speed,
             PositionX = this.positionX / Resource.OfficalChartPosXMagicNumber,
@@ -147,14 +146,14 @@ public class OfficalChart : IOfficalCharts
     public int formatVersion { get; set; }
     public float offset { get; set; }
     public List<judgeLineListOfficalChart> judgeLineList { get; set; }
-    public Chart ToInternalFormat()
+    public ChartInternalFormat ToInternalFormat()
     {
         List<JudgeLineInternalFormat> _judgeLines = new();
         foreach (judgeLineListOfficalChart line in this.judgeLineList)
         {
             _judgeLines.Add(line.ToInternalFormat());
         }
-        return new Chart()
+        return new ChartInternalFormat()
         {
             Format = "Offical:" + this.formatVersion.ToString(),
             Offset = this.offset,

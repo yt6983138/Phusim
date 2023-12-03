@@ -48,7 +48,7 @@ public class ChartDiffculty
 {
     public string Type = "Unknown";
     public float Level = -32768;
-    public string Format = "{0} Lv.{1}";
+    public string Format = "{0} Lv.{1:0.0}";
     public string FullString
     {
         get
