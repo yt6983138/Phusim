@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-#nullable enable
+using UnityEngine;
 
-//[Serializable]
 public class ConfigItems : ICloneable //fuck this i spent 2hr to figure out bruh
 {
     public Dictionary<string, Judgement> Judgements;
     public Dictionary<string, Dictionary<string, object>> Ranks;
-    public float NoteScale;
+    public Vector3 NoteScale;
     public Dictionary<string, float> Volumes;
     public float ChartAspectRatio;
     public string SkinPath;
@@ -29,4 +28,3 @@ public class ConfigItems : ICloneable //fuck this i spent 2hr to figure out bruh
         };
     }
 }
-#nullable disable

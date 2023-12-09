@@ -10,6 +10,7 @@ using UnityEngine.UI;
 
 public class NoteInternalFormat : IComparable<NoteInternalFormat>
 {
+    // note size should be screen width / 7.2
     [JsonIgnore]
     public GameObject NoteObj { get; set; }
 
@@ -19,11 +20,11 @@ public class NoteInternalFormat : IComparable<NoteInternalFormat>
     /// basically time out, in ms
     /// </summary>
     [JsonIgnore]
-    public float HitTime { get; set; }
-    [JsonIgnore]
     public bool IsVisible { get; private set; } = false;
     [JsonIgnore]
     public int? HitJudgeMS { get; private set; } = null;
+    [JsonIgnore]
+    public bool Suspended { get; private set; } = false;
 
     public bool RequireFlick { get; set; }
     public bool RequireTap { get; set; }
@@ -70,13 +71,25 @@ public class NoteInternalFormat : IComparable<NoteInternalFormat>
     private int TimeMS;
     private Color _noteColor;
     private Vector2 _posOnScreen;
+    private SlicedFilledImage _imageComponent;
     public int CompareTo(NoteInternalFormat note)
     {
         return this.Id.CompareTo(note.Time);
     }
-    public void Update(int timeMS, in int[] notePosArray, in Camera cam)
+    public void Update(int timeMS, in int[] notePosArray, in float bpm, in Camera cam)
     {
-        this._posOnScreen.y = notePosArray[Math.Max(this.TimeMS - timeMS + 200, 0)] * this.Speed;
+        if (this.Suspended)
+        {
+            if (timeMS > Utils.ChartTimeToMS(bpm, this.HoldTime + this.Time))
+            {
+                return;
+            }
+            // below part: the time has changed(user change or smth) so its no longer suspended
+            this.Suspended = false;
+            this.NoteObj.SetActive(true);
+        }
+
+        this._posOnScreen.y = notePosArray[Math.Max(this.TimeMS - timeMS + 200, 0)] * this.Speed * (this.IsAbove ? 1f : -1f);
         RectTransformUtility.ScreenPointToWorldPointInRectangle(
             (RectTransform)ChartManager.Canvas.transform,
             this._posOnScreen,
@@ -84,20 +97,55 @@ public class NoteInternalFormat : IComparable<NoteInternalFormat>
             out this._notePos
         );
         this.NoteObj.transform.position = this._notePos;
-        if (!this.IsVisible && TimeMS > this.VisibleSinceTimeMS)
-        { //   ^ to prevent use getcomponent every update
+        if ((this.IsVisible && TimeMS > this.VisibleSinceTimeMS) || this._notePos.y > 0)
+        {
             this._noteColor.a = 1;
-            this.NoteObj.GetComponent<Image>().color = this._noteColor;
-            this.IsVisible = true;
+            ImageUpdate();
+        }
+        else if (Utils.ChartTimeToMS(bpm, this.HoldTime + this.Time) - timeMS < 0)
+        {
+            this._noteColor.a = 0;
+            this.Suspended = true;
+            this.NoteObj.SetActive(false);
         }
     }
-    public void Initalize(float bpm, int chartWidth, in JudgeLineInternalFormat parent)
+    public void ImageUpdate()
     {
-        this.TimeMS = (int)StaticUtils.ChartTimeToMS(bpm, this.Time);
-        _posOnScreen = new Vector2(chartWidth / 2 * this.PositionX, 0);
+        this._imageComponent.color = this._noteColor; // get/set is actually function so we cant just use ...ent.color.a = x
+    }
+    public void HoldImageUpdate()
+    {
+
+    }
+    public void Initalize(float bpm, in int[] notePosArray, in JudgeLineInternalFormat parent)
+    {
+        this.TimeMS = (int)Utils.ChartTimeToMS(bpm, this.Time);
+        this._posOnScreen = new Vector2(ChartManager.ChartRenderSize.width / 2 * this.PositionX, 0);
         this.NoteObj = GameObject.Instantiate(NoteTextureManager.NoteTemplate, parent.LineObj.transform);
-        Image component = this.NoteObj.AddComponent<Image>();
-        component.sprite = NoteTextureManager.GetSpriteForNote(this);
+        this.NoteObj.transform.eulerAngles = new Vector3(0, 0, this.IsAbove ? 0 : 180);
+        this.NoteObj.transform.localScale = new Vector3(
+            ChartManager.ChartRenderSize.width / 7.2f,
+            ChartManager.ChartRenderSize.height / 7.2f,
+            1
+        ).Multiply(Config.Configuration.NoteScale);
+        RectTransform trasform = this.NoteObj.GetComponent<RectTransform>();
+        this._imageComponent = this.NoteObj.AddComponent<SlicedFilledImage>();
+        this._imageComponent.sprite = NoteTextureManager.GetSpriteForNote(this);
+        this._imageComponent.fillDirection = SlicedFilledImage.FillDirection.Down;
+        if (this.HoldTime > 0)
+        {
+            trasform.sizeDelta = new Vector2(
+                trasform.sizeDelta.x,
+                (
+                    notePosArray[(int)Utils.ChartTimeToMS(bpm, this.HoldTime + this.Time)]
+                    - notePosArray[(int)Utils.ChartTimeToMS(bpm, this.Time)]
+                ) / this.NoteObj.transform.localScale.y
+            );
+        }
+        else
+        {
+            ;
+        }
         this.State = NoteState.DoneLoading;
     }
 }

@@ -3,14 +3,14 @@ using UnityEngine;
 
 public static class Resource
 {
-    private readonly static string basePath = StaticUtils.GetDefaultConfigPath();
+    private readonly static string basePath = Utils.GetDefaultConfigPath();
     public readonly static string ConfigPath = basePath;
     public readonly static string ConfigFileName = "Config.json";
-    public readonly static string SkinPath = basePath + StaticUtils.ToPlatformPath("Skins/Default/");
+    public readonly static string SkinPath = basePath + Utils.ToPlatformPath("Skins/Default/");
     public readonly static string SkinFileName = "Skin.json";
-    public readonly static string LangPath = basePath + StaticUtils.ToPlatformPath("Lang/");
+    public readonly static string LangPath = basePath + Utils.ToPlatformPath("Lang/");
     public readonly static string LangFileName = "en_US.json";
-    public readonly static string LogPath = basePath + StaticUtils.ToPlatformPath("Logs/");
+    public readonly static string LogPath = basePath + Utils.ToPlatformPath("Logs/");
     public readonly static string LogFileName = "Latest.log";
 
     public readonly static float ScreenAspectRatio = (float)Screen.width / (float)Screen.height;
@@ -95,7 +95,7 @@ public static class Resource
                     { "ComboRequired", 0 },
                     { "ComparingPriority", 3 } } }
         },
-        NoteScale = 1,
+        NoteScale = new Vector3(1, 1, 1),
         Volumes = new() { { "Music", 1 }, { "Effects", 1 }, { "HitSound", 1 } },
         ChartAspectRatio = ((ScreenAspectRatio) < Ratio16_9) ? (ScreenAspectRatio) : Ratio16_9,
         SkinPath = SkinPath,

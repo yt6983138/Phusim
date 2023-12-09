@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 
+#pragma warning disable CS0618 // Type or member is obsolete
 public class KawaseBlur : ScriptableRendererFeature
 {
     [System.Serializable]
@@ -128,5 +129,4 @@ public class KawaseBlur : ScriptableRendererFeature
         renderer.EnqueuePass(scriptablePass);
     }
 }
-
-
+#pragma warning restore CS0618 // Type or member is obsolete

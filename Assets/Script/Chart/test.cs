@@ -9,7 +9,7 @@ public class test : MonoBehaviour
 {
     void Start()
     {
-        /*AudioClip clip = StaticUtils.GetAudioClip(new Uri(@"E:\Files\Phusim\test.mp3", UriKind.Absolute));
+        /*AudioClip clip = Utils.GetAudioClip(new Uri(@"E:\Files\Phusim\test.mp3", UriKind.Absolute));
 
         AudioSource source = this.gameObject.GetComponent<AudioSource>();
 
@@ -17,5 +17,7 @@ public class test : MonoBehaviour
         source.Play();*/
         List<ChartMeta> test = ChartManager.LoadMetaFromDifferentSimulator(@"E:\Files\Phusim\info.yml");
         Debug.Log(test.ToString<ChartMeta>());
+        GameObject obj = GameObject.Find("te");
+        GameObject newobj = GameObject.Instantiate(new GameObject(), obj.transform);
     }
 }

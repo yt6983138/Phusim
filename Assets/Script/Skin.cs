@@ -3,12 +3,11 @@ using System.Collections.Generic;
 using System.IO;
 using TMPro;
 using UnityEngine;
-//using ProtoBuf;
-#nullable enable
+
 public static class Skins
 {
     public static SkinItems GameSkin { get; set; }
-    public static string? SkinFileLocation;
+    public static string SkinFileLocation;
     public static Dictionary<string, TMP_FontAsset> FontHolder = new();
     public static Dictionary<string, Texture2D> TextureHolder = new();
     public static void Init()
@@ -16,7 +15,9 @@ public static class Skins
         try
         {
             throw new Exception();
-            if (Config.Configuration.SkinPath == null) {  throw new NullReferenceException("Something is wrong about config file, consider re-generate it"); }
+#pragma warning disable CS0162 // Unreachable code detected
+            if (Config.Configuration.SkinPath == string.Empty) {  throw new NullReferenceException("Something is wrong about config file, consider re-generate it"); }
+#pragma warning restore CS0162 // Unreachable code detected
             SkinFileLocation = Config.Configuration.SkinPath + Resource.SkinFileName;
             LoadSkin();
         }
@@ -48,7 +49,7 @@ public static class Skins
     {
         string nameSpace = string.Format("{0}.{1}", key, state);
         key = key.Replace(".", "/");
-        string path = Config.Configuration.SkinPath + StaticUtils.ToPlatformPath(string.Format("{0}/{1}.png", key, state));
+        string path = Config.Configuration.SkinPath + Utils.ToPlatformPath(string.Format("{0}/{1}.png", key, state));
         try
         {
             if (TextureHolder.ContainsKey(nameSpace)) { return TextureHolder[nameSpace]; }
@@ -63,7 +64,7 @@ public static class Skins
             //texture.Compress(false);
 
             // i had to use texture.bytes instead texture.png bc its annoying to do a decompress conversation everytime
-            StaticUtils.WriteResource(path, Resources.Load<TextAsset>(nameSpace).bytes);
+            Utils.WriteResource(path, Resources.Load<TextAsset>(nameSpace).bytes);
             TextureHolder[nameSpace] = UIUtils.LoadTexture(path);
             return TextureHolder[nameSpace];
         }
@@ -80,7 +81,7 @@ public static class Skins
         TMP_FontAsset tmpFont = TMP_FontAsset.CreateFontAsset(font);
         FontHolder[name] = tmpFont;
     }
-    public static TMP_FontAsset LoadFont(string key, string? path = null)
+    public static TMP_FontAsset LoadFont(string key, string path = "")
     {
         try
         {
@@ -92,10 +93,9 @@ public static class Skins
         {
             LogHandler.Log(LogHandler.Error, e);
             TextAsset loadFromAssets = Resources.Load<TextAsset>(key);
-            StaticUtils.WriteResource(path, (loadFromAssets == null) ? throw new Exception("Cannot found asset!") : loadFromAssets.bytes);
+            Utils.WriteResource(path, (loadFromAssets == null) ? throw new Exception("Cannot find asset!") : loadFromAssets.bytes);
             ReadFont(path, key);
             return FontHolder[key];
         }
     }
 }
-#nullable disable

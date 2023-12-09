@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 
@@ -11,11 +10,32 @@ public static class JudgeLineTextureManager
 {
     private static readonly Sprite Unset = Sprite.Create(Texture2D.whiteTexture, new Rect(0, 0, Texture2D.whiteTexture.width, Texture2D.whiteTexture.height), new Vector2(0, 0));
 
-    public static Sprite LineAP = Unset;
-    public static Sprite LineFC = Unset;
-    public static Sprite LineMissed = Unset;
+    public static Sprite LineAP { get; private set; } = Unset;
+    public static Sprite LineFC { get; private set; } = Unset;
+    public static Sprite LineMissed { get; private set; } = Unset;
+    public static GameObject LineTemplate { get; private set; }
+    public static bool HasInitialized { get; private set; } = false;
 
-    private static Dictionary<int, Sprite> TextureOverride = new();
+    public static Dictionary<int, Sprite> TextureOverride { get; set; } = new();
+
+    public static void Initialize(Sprite ap, Sprite fc, Sprite miss, GameObject template)
+    {
+        if (HasInitialized) { throw new Exception("Already Initialized"); }
+        TextureOverride.Clear();
+        LineAP = ap;
+        LineFC = fc;
+        LineMissed = miss;
+        LineTemplate = template;
+        HasInitialized = true;
+    }
+    public static void Reset()
+    {
+        TextureOverride.Clear();
+        LineAP = Unset;
+        LineFC = Unset;
+        LineMissed = Unset;
+        HasInitialized = false;
+    }
     public static Sprite GetSpriteForLine(in JudgeLineInternalFormat line)
     {
         if (line.UseOverrideTexture)

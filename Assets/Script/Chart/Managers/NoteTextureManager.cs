@@ -8,21 +8,35 @@ using UnityEngine;
 public static class NoteTextureManager
 {
     private static readonly Sprite Unset = Sprite.Create(Texture2D.whiteTexture, new Rect(0, 0, Texture2D.whiteTexture.width, Texture2D.whiteTexture.height), new Vector2(0, 0));
-    public static GameObject NoteTemplate;
+    public static GameObject NoteTemplate { get; private set; }
 
-    public static Sprite Tap = Unset;
-    public static Sprite TapMultiPress = Unset;
-    public static Sprite Drag = Unset;
-    public static Sprite DragMultiPress = Unset;
-    public static Sprite Flick = Unset;
-    public static Sprite FlickMultiPress = Unset;
-    public static Sprite TapFlick = Unset;
-    public static Sprite TapFlickMultiPress = Unset;
-    public static Sprite Hold = Unset;
-    public static Sprite HoldMultiPress = Unset;
+    public static Sprite Tap { get; private set; } = Unset;
+    public static Sprite TapMultiPress { get; private set; } = Unset;
+    public static Sprite Drag { get; private set; } = Unset;
+    public static Sprite DragMultiPress { get; private set; } = Unset;
+    public static Sprite Flick { get; private set; } = Unset;
+    public static Sprite FlickMultiPress { get; private set; } = Unset;
+    public static Sprite TapFlick { get; private set; } = Unset;
+    public static Sprite TapFlickMultiPress { get; private set; } = Unset;
+    public static Sprite Hold { get; private set; } = Unset;
+    public static Sprite HoldMultiPress { get; private set; } = Unset;
 
-    private static Dictionary<int, Sprite> TextureOverride = new();
+    public static Dictionary<int, Sprite> TextureOverride { get; set; } = new();
 
+    public static void Initialize(Sprite tap, Sprite tapMl, Sprite drag, Sprite dragMl, Sprite flick, Sprite flickMl, Sprite TF, Sprite TFMl, Sprite hold, Sprite holdMl)
+    {
+        TextureOverride.Clear();
+        Tap = tap;
+        TapMultiPress = tapMl;
+        Drag = drag;
+        DragMultiPress = dragMl;
+        Flick = flick;
+        FlickMultiPress = flickMl;
+        TapFlick = TF;
+        TapFlickMultiPress = TFMl;
+        Hold = hold;
+        Hold = holdMl;
+    }
     public static Sprite GetSpriteForNote(in NoteInternalFormat note)
     {
         if (note.UseOverrideTexture)
@@ -56,7 +70,7 @@ public static class NoteTextureManager
                 return note.MultiPress ? HoldMultiPress : Hold;
         }
     }
-    public static void Clear()
+    public static void Reset()
     {
         Tap = Unset;
         TapMultiPress = Unset;

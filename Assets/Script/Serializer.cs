@@ -17,10 +17,10 @@ public static class Serializer
     public static void SerializeBin<T>(string path, T obj)
     {
         throw new NotImplementedException();
-        using (FileStream file = File.Open(path, FileMode.OpenOrCreate))
-        {
-            //file.Write(SerializationUtility.SerializeValue<T>(obj, DataFormat.Binary));
-        }
+        // using (FileStream file = File.Open(path, FileMode.OpenOrCreate))
+        // {
+        //     //file.Write(SerializationUtility.SerializeValue<T>(obj, DataFormat.Binary));
+        // }
     }
     public static void SerializeJson<T>(string path, T obj)
     {

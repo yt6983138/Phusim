@@ -23,7 +23,7 @@ public class UniversalButtonBehaviour : MonoBehaviour
         { // FUCK C# TUPLES BRUHHHHHHHHHHHH
             var execute = Resource.InvokeInfo[this.gameObject.name];
             Type type = Type.GetType(execute.info);
-            MethodInfo method = type.GetMethod(execute.method, StaticUtils.ObjectToTypeArray(execute.args));
+            MethodInfo method = type.GetMethod(execute.method, Utils.ObjectToTypeArray(execute.args));
             if (method != null)
             {
                 method.Invoke(this, execute.args);

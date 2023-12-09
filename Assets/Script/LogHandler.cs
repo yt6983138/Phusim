@@ -14,34 +14,16 @@ public class LogHandler
     public static string Info = @"Info";
     public static string Verbose = @"Verbose";
     public static string Other = @"Easter-Egg";
-    /*
-    private static byte[] zero = new byte[0];
-    private static byte[] buf = { };
-    */
-    private static List<byte[]> queue = new();
+
+    private volatile static List<byte[]> queue = new();
+    private static Thread workerThread;
 
     public static void Init()
     {
-        Task.Run(() =>
-        {
-            WriteQueue();
-        });
+        workerThread = new Thread(new ThreadStart(WriteQueue));
+        workerThread.Start();
     }
-    /*public static async Task WriteBuffer()
-    {
-        string path = Config.HasInitalized ? Config.Configuration.LogPath : Resource.LogPath;
-        Directory.CreateDirectory(path);
-        using (FileStream SourceStream = File.Open(path + Resource.LogFileName, FileMode.Append))
-        {
-            while (true)
-            {
-                SourceStream.Seek(0, SeekOrigin.End);
-                await SourceStream.WriteAsync(buf, 0, buf.Length);
-                buf = zero;
-            }
-        }
-    }*/
-    public static async Task WriteQueue()
+    public static void WriteQueue()
     {
         string path = Config.HasInitalized ? Config.Configuration.LogPath : Resource.LogPath;
         Directory.CreateDirectory(path);
@@ -51,9 +33,12 @@ public class LogHandler
             {
                 if (queue.Count > 0)
                 {
-                    byte[] _buffer = queue[queue.Count - 1];
-                    await SourceStream.WriteAsync(_buffer, 0, _buffer.Length);
-                    queue.RemoveAt(queue.Count - 1);
+                    lock (queue)
+                    {
+                        byte[] _buffer = queue[^1]; // queue.Count - 1
+                        SourceStream.Write(_buffer, 0, _buffer.Length);
+                        queue.RemoveAt(queue.Count - 1);
+                    }
                 }
                 Thread.Sleep(50);
             }
@@ -110,7 +95,7 @@ public class LogHandler
             type,
             message
         );
-        queue.Add(Encoding.Unicode.GetBytes(errorFormated));
+        lock (queue) { queue.Add(Encoding.Unicode.GetBytes(errorFormated)); }
         Debug.Log(errorFormated);
     }
 }

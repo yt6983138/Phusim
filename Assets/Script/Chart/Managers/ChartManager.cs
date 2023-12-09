@@ -17,7 +17,6 @@ public static class ChartManager
     public static ChartInternalFormat CurrentChart { get; private set; }
     public static ChartMeta CurrentChartMeta { get; private set; }
     public static GameObject Canvas { get; private set; }
-    public static JudgeLineManager JudgeLineManager { get; private set; }
     public static bool HasEnd { get; private set; } = true;
     public static int EndTimeMs { get; private set; }
     public static float CurrnetProgress { get; } = EndTimeMs / Timer.ElapsedMilliseconds;
@@ -146,13 +145,13 @@ public static class ChartManager
                 {
                     ChartPath = item.Chart
                 };
-                StaticUtils.ExecuteWithTry(() => { meta.MusicPath = item.Music; });
-                StaticUtils.ExecuteWithTry(() => { meta.BackgroundPath = item.Image; });
-                StaticUtils.ExecuteWithTry(() => { meta.ChartName = item.Name; });
-                StaticUtils.ExecuteWithTry(() => { meta.Charter = item.Charter; });
-                StaticUtils.ExecuteWithTry(() => { meta.Illustrator = item.Illustrator; });
-                StaticUtils.ExecuteWithTry(() => { meta.Composer = item.Artist; });
-                StaticUtils.ExecuteWithTry(() => { meta.ChartDiffculty = ParseDiffcultyFromString(item.Level); });
+                Utils.ExecuteWithTry(() => { meta.MusicPath = item.Music; });
+                Utils.ExecuteWithTry(() => { meta.BackgroundPath = item.Image; });
+                Utils.ExecuteWithTry(() => { meta.ChartName = item.Name; });
+                Utils.ExecuteWithTry(() => { meta.Charter = item.Charter; });
+                Utils.ExecuteWithTry(() => { meta.Illustrator = item.Illustrator; });
+                Utils.ExecuteWithTry(() => { meta.Composer = item.Artist; });
+                Utils.ExecuteWithTry(() => { meta.ChartDiffculty = ParseDiffcultyFromString(item.Level); });
                 metas.Add(meta);
             }
             return metas;
@@ -164,16 +163,16 @@ public static class ChartManager
             {
                 ChartPath = (string)otherMeta["chart"]
             };
-            StaticUtils.ExecuteWithTry(() => { meta.MusicPath = (string)otherMeta["music"]; });
-            StaticUtils.ExecuteWithTry(() => { meta.BackgroundPath = (string)otherMeta["illustration"]; });
-            StaticUtils.ExecuteWithTry(() => { meta.ChartName = (string)otherMeta["name"]; });
-            StaticUtils.ExecuteWithTry(() => { meta.Charter = (string)otherMeta["charter"]; });
-            StaticUtils.ExecuteWithTry(() => { meta.Illustrator = (string)otherMeta["illustrator"]; });
-            StaticUtils.ExecuteWithTry(() => { meta.Composer = (string)otherMeta["composer"]; });
+            Utils.ExecuteWithTry(() => { meta.MusicPath = (string)otherMeta["music"]; });
+            Utils.ExecuteWithTry(() => { meta.BackgroundPath = (string)otherMeta["illustration"]; });
+            Utils.ExecuteWithTry(() => { meta.ChartName = (string)otherMeta["name"]; });
+            Utils.ExecuteWithTry(() => { meta.Charter = (string)otherMeta["charter"]; });
+            Utils.ExecuteWithTry(() => { meta.Illustrator = (string)otherMeta["illustrator"]; });
+            Utils.ExecuteWithTry(() => { meta.Composer = (string)otherMeta["composer"]; });
 
             ChartDiffculty diffculty = new();
-            StaticUtils.ExecuteWithTry(() => { diffculty = ParseDiffcultyFromString((string)otherMeta["level"]); });
-            diffculty.Level = StaticUtils.ExecuteWithTry<float>(() => { return float.Parse((string)otherMeta["difficulty"]); });
+            Utils.ExecuteWithTry(() => { diffculty = ParseDiffcultyFromString((string)otherMeta["level"]); });
+            diffculty.Level = Utils.ExecuteWithTry<float>(() => { return float.Parse((string)otherMeta["difficulty"]); });
             // for some reason ymlparser think floats are strings bruh
             meta.ChartDiffculty = diffculty;
 
@@ -192,7 +191,7 @@ public static class ChartManager
         {
             if (line.StartsWith("Lv.", StringComparison.InvariantCultureIgnoreCase))
             {
-                StaticUtils.ExecuteWithTry(() => { chartDiffculty.Level = float.Parse(line.Replace("Lv.", "").Replace(" ", "")); });
+                Utils.ExecuteWithTry(() => { chartDiffculty.Level = float.Parse(line.Replace("Lv.", "").Replace(" ", "")); });
             }
             else if (line.Length > 1 && line.Length < 8) { chartDiffculty.Type = line; }
         }

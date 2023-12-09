@@ -1,17 +1,15 @@
 using System;
 using System.IO;
-#nullable enable
 
 // b4 u ask why not playerperfs:
 // its bc its so fucking hard to change manually by non root users in android
 // also i cant use dict in dict with playerperfs
 
-public class Config
+public static class Config
 {
     public static string ConfigLocation;
     public static ConfigItems Configuration { get; set; }
     public static bool HasInitalized = false;
-    // Start is called before the first frame update
     public static void Init()
     {
         try
@@ -25,8 +23,6 @@ public class Config
             throw ex;
         }
     }
-
-    // Update is called once per frame
     public static void InitializeConfig()
     {
         SetDefaultConfig();
@@ -59,4 +55,3 @@ public class Config
         Serializer.SerializeJson(ConfigLocation, Configuration);
     }
 }
-#nullable disable
