@@ -4,10 +4,10 @@ Work in progress:
 | Done: | Progress: | Items: | Comments:|
 | ----------- | ----------- | ----------- | ----------- |
 | False | 80% | Config System  |  |
-| False | 50% | Skin System |  |
-| False | 20% | UI | (menu 90% done, gonna do settings next) |
+| False | 60% | Skin System |  |
+| False | 21% | UI | (menu 90% done, gonna do settings next) |
 | False | 20% | Language System |  |
-| False | 29% | Chart Loading | havent add rpe support yet(working on offical chart format) |
+| False | 35% | Chart Loading | havent add rpe support yet(working on offical chart format), now having headache on hold note pos update :sob: |
 | False | 0% | Plugin System | *May not do it |
 | False | 0% | Player Input |  |
 | False | -% | And More... |  |
