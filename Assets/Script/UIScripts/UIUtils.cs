@@ -149,4 +149,19 @@ public static class UIUtils
             throw new Exception("this should never happen");
         }
     }
+    /// <summary>
+    /// its kinda annoying that default value must be baked into il :( (no new keyword)
+    /// </summary>
+    /// <param name="tex">texture</param>
+    /// <param name="border">1. left 2. bottom 3. right 4. top</param>
+    /// <param name="rect">rect, default: texture size</param>
+    /// <param name="pivot">pivot, default: 0.5, 0.5(center of texture)</param>
+    /// <param name="pixelPerUnit">ppu, default: 100</param>
+    /// <param name="extrude">idk what is this, default 0</param>
+    /// <param name="meshType">idk either</param>
+    /// <returns>9 sliced sprite</returns>
+    public static Sprite Create9SlicedQuick(Texture2D tex, Vector4 border, Rect? rect = null, Vector2? pivot = null, float pixelPerUnit = 100f, uint extrude = 0, SpriteMeshType meshType = SpriteMeshType.Tight)
+    {
+        return Sprite.Create(tex, rect ?? new Rect(0, 0, tex.width, tex.height), pivot ?? new Vector2(0.5f, 0.5f), pixelPerUnit, extrude, meshType, border);
+    }
 }

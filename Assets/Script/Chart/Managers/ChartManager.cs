@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -11,7 +12,7 @@ public static class ChartManager
     public static System.Diagnostics.Stopwatch Timer { get; private set; } = new();
 
     public static float ChartAspect { get; private set; } = Config.Configuration.ChartAspectRatio;
-    public static AudioClip Bgm { get; private set; } = AudioClip.Create("Empty", 10, 2, 1, false);
+    public static AudioClip Bgm { get; private set; } = AudioClip.Create("Empty", 1000, 2, 1, false);
     public static AudioSource BgmPlayer { get; private set; }
     public static Texture2D Background { get; private set; } = Texture2D.blackTexture;
     public static ChartInternalFormat CurrentChart { get; private set; }
@@ -19,7 +20,7 @@ public static class ChartManager
     public static GameObject Canvas { get; private set; }
     public static bool HasEnd { get; private set; } = true;
     public static int EndTimeMs { get; private set; }
-    public static float CurrnetProgress { get; } = EndTimeMs / Timer.ElapsedMilliseconds;
+    public static float CurrnetProgress { get { return Timer.ElapsedMilliseconds / EndTimeMs; } }
     public static Camera Cam { get; private set; }
     public static (float width, float height) ChartWindowSize { get; private set; }
     public static (float width, float height) ChartRenderSize
@@ -35,7 +36,7 @@ public static class ChartManager
     public static int CurrentBad { get; set; } = 0;
     public static int CurrentMiss { get; set; } = 0;
 
-    public static void InitializeEverything(ChartInternalFormat chart, AudioClip bgm, AudioSource player, Texture2D background, ChartMeta meta, ref GameObject objectToDrawOn, ref Camera cam, (float width, float height)? chartRenderSize)
+    public static void InitializeEverything(ChartInternalFormat chart, AudioClip bgm, in AudioSource player, Texture2D background, ChartMeta meta, in GameObject objectToDrawOn, in Camera cam, (float width, float height)? chartRenderSize)
     {
         if (!HasEnd)
         {
@@ -56,12 +57,27 @@ public static class ChartManager
         _chartRenderSize = chartRenderSize;
         Timer.Reset();
     }
+    public static void Start()
+    {
+        if (!HasEnd) { throw new Exception("The chart is playing!"); }
+        HasEnd = !HasEnd;
+        Timer.Start();
+        BgmPlayer.clip = Bgm;
+        BgmPlayer.Play();
+    }
 
     public static ChartInternalFormat LoadChart(string path)
     {
         //dynamic chart = Serializer.DeserializeJson<dynamic>(path);
         //UnityEditor.AssetDatabase.LoadAssetAtPath
-        switch (GuessChartType(Serializer.DeserializeJson<dynamic>(path)))
+        switch (GuessChartType(Serializer.DeserializeJson<dynamic>(
+            path, 
+            new JsonSerializerSettings() 
+            { 
+                Error = delegate (object sender, Newtonsoft.Json.Serialization.ErrorEventArgs args) { args.ErrorContext.Handled = true; }, 
+                MaxDepth = 2
+            }
+            ))) // to speed up detect process
         {
             case ChartType.Offical:
                 return Serializer.DeserializeJson<OfficalChart>(path, _settings).ToInternalFormat();

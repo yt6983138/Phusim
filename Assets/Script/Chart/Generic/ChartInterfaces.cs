@@ -30,7 +30,7 @@ public interface IOfficalCharts
     public ChartInternalFormat ToInternalFormat();
 }
 
-public interface IInternalEventFormat
+public interface IInternalEventFormat : IComparable<IInternalEventFormat>
 {
     /// <summary>
     /// 1st beat = 8, 2nd beat = 16 etc

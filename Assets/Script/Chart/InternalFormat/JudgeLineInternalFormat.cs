@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class JudgeLineInternalFormat
+public class JudgeLineInternalFormat : IComparable<JudgeLineInternalFormat>
 {
     // migrating smth
     [JsonIgnore]
@@ -164,9 +164,8 @@ public class JudgeLineInternalFormat
             this.NotePositionArray[i] = (int)sum;
         }
     }
-    public async void Update()
+    public async void Update(int currentMS)
     {
-        int currentMS = (int)ChartManager.Timer.ElapsedMilliseconds;
         this.LineObj.transform.position = this.PositionArray[currentMS];
         this.LineObj.transform.eulerAngles = this.RotationArray[currentMS];
         this._lineColor.a = 0.003921569f * this.OpacityArray[currentMS];
@@ -178,5 +177,9 @@ public class JudgeLineInternalFormat
                 note.Update(currentMS, this.NotePositionArray, this.BPM, ChartManager.Cam); 
             }
         });
+    }
+    public int CompareTo(JudgeLineInternalFormat line)
+    {
+        return this.Notes.Count.CompareTo(line.Notes.Count);
     }
 }

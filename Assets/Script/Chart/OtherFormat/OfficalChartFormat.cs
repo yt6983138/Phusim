@@ -56,7 +56,7 @@ public class NoteOfficalChart : IOfficalNotes
         return _note;
     }
 }
-public class LineSpeedEventsOfficalChart : IOfficalChartEvents
+public class LineSpeedEventsOfficalChart :  IOfficalChartEvents
 {
     public float startTime { get; set; }
     public float endTime { get; set; }

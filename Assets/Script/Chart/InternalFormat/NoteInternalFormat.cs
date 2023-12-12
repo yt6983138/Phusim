@@ -89,7 +89,7 @@ public class NoteInternalFormat : IComparable<NoteInternalFormat>
             this.NoteObj.SetActive(true);
         }
 
-        this._posOnScreen.y = notePosArray[Math.Max(this.TimeMS - timeMS + 200, 0)] * this.Speed * (this.IsAbove ? 1f : -1f);
+        this._posOnScreen.y = GetNotePosititon(in notePosArray, this.TimeMS, timeMS, bpm, this.Speed, this.IsAbove, true);
         RectTransformUtility.ScreenPointToWorldPointInRectangle(
             (RectTransform)ChartManager.Canvas.transform,
             this._posOnScreen,
@@ -97,7 +97,7 @@ public class NoteInternalFormat : IComparable<NoteInternalFormat>
             out this._notePos
         );
         this.NoteObj.transform.position = this._notePos;
-        if ((this.IsVisible && TimeMS > this.VisibleSinceTimeMS) || this._notePos.y > 0)
+        if (this.IsVisible && TimeMS > this.VisibleSinceTimeMS && this._notePos.y > 0)
         {
             this._noteColor.a = 1;
             ImageUpdate();
@@ -108,6 +108,10 @@ public class NoteInternalFormat : IComparable<NoteInternalFormat>
             this.Suspended = true;
             this.NoteObj.SetActive(false);
         }
+    }
+    private static int GetNotePosititon(in int[] notePosArray, int noteTime, int nowTimeMS, float bpm, float speed, bool isAbove, bool useMSinNoteTimeInstead = false)
+    {
+        return (int)(notePosArray[(int)Math.Max((useMSinNoteTimeInstead ? noteTime : Utils.ChartTimeToMS(bpm, noteTime)) - nowTimeMS + 200, 0)] * speed * (isAbove ? 1f : -1f));
     }
     public void ImageUpdate()
     {

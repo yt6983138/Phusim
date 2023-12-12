@@ -10,10 +10,18 @@ public class ChartInternalFormat
     public ChartFeatures Features { get; set; }
     public void Process(in GameObject canva)
     {
+        //this.JudgeLineList.Sort();
         for (int i = 0; i < JudgeLineList.Count; i++)
         {
-            JudgeLineList[i].Initalize(canva);
-            JudgeLineList[i].Id = i;
+            this.JudgeLineList[i].Initalize(canva);
+            this.JudgeLineList[i].Id = i;
+        }
+    }
+    public void Update(int currentMS)
+    {
+        foreach (JudgeLineInternalFormat line in this.JudgeLineList)
+        {
+            line.Update(currentMS);
         }
     }
 }

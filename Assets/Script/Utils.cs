@@ -78,7 +78,8 @@ public static class Utils
     {
         using (UnityWebRequest web = UnityWebRequestMultimedia.GetAudioClip(url, audioType))
         {
-            web.SendWebRequest();
+            var request = web.SendWebRequest();
+            while (!request.isDone) {; }
             AudioClip _clip = DownloadHandlerAudioClip.GetContent(web);
             return (_clip != null) ? _clip : throw new Exception("Unable to get clip");
         }
@@ -95,7 +96,8 @@ public static class Utils
         try
         {
             method();
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             LogHandler.Log(LogHandler.Warning, e);
         }
